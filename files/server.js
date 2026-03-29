@@ -10,9 +10,16 @@ const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
 
+const path = require('path');
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
+
+// Serve the frontend HTML on the root route
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend.html'));
+});
 
 // ─── DNA ENCODING LOGIC ───────────────────────────────────────────────────────
 
@@ -303,11 +310,16 @@ app.get('/health', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`\n🧬 DNA System API running on http://localhost:${PORT}`);
-  console.log('Available endpoints:');
-  console.log('  POST /encode   — text → DNA');
-  console.log('  POST /decode   — DNA → text');
-  console.log('  POST /barcode  — generate DNA barcode');
-  console.log('  POST /compare  — compare two sequences\n');
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n🧬 DNA System API running on http://localhost:${PORT}`);
+    console.log('Available endpoints:');
+    console.log('  POST /encode   — text → DNA');
+    console.log('  POST /decode   — DNA → text');
+    console.log('  POST /barcode  — generate DNA barcode');
+    console.log('  POST /compare  — compare two sequences\n');
+  });
+}
+
+// Export the Express API for Vercel
+module.exports = app;
