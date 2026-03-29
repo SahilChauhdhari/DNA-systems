@@ -1,9 +1,9 @@
-﻿{
+{
   "rewrites": [
-    { "source": "/encode", "destination": "/api" },
-    { "source": "/decode", "destination": "/api" },
-    { "source": "/barcode", "destination": "/api" },
-    { "source": "/compare", "destination": "/api" },
-    { "source": "/health", "destination": "/api" }
+    { "source": "/encode", "destination": "/api/index" },
+    { "source": "/decode", "destination": "/api/index" },
+    { "source": "/barcode", "destination": "/api/index" },
+    { "source": "/compare", "destination": "/api/index" },
+    { "source": "/health", "destination": "/api/index" }
   ]
 }
