@@ -17,9 +17,7 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // Serve the frontend HTML on the root route
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+// Managed by Vercel Static Hosting
 
 // ─── DNA ENCODING LOGIC ───────────────────────────────────────────────────────
 

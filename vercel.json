@@ -1,18 +1,9 @@
 ﻿{
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": "index.html"
-      }
-    }
-  ],
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/server.js"
-    }
+    { "source": "/encode", "destination": "/api" },
+    { "source": "/decode", "destination": "/api" },
+    { "source": "/barcode", "destination": "/api" },
+    { "source": "/compare", "destination": "/api" },
+    { "source": "/health", "destination": "/api" }
   ]
 }
