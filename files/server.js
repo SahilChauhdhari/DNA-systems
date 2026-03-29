@@ -18,7 +18,7 @@ app.use(express.json({ limit: '10mb' }));
 
 // Serve the frontend HTML on the root route
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ─── DNA ENCODING LOGIC ───────────────────────────────────────────────────────
