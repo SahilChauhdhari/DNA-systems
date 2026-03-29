@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>HELIXDB — DNA Computing Interface</title>
+<title>SynthByte</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
 <style>
 /* ── RESET & ROOT ─────────────────────────────────────────────────── */
@@ -118,16 +118,31 @@ main{
   border-radius:14px;padding:26px;margin-bottom:22px;
   position:relative;overflow:hidden;
   box-shadow:var(--shadow);
-  transition:border-color .3s;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform: perspective(1000px) translateY(0);
 }
-.glass-card:hover{border-color:rgba(0,229,255,0.25)}
+.glass-card:hover{
+  border-color:rgba(0,229,255,0.5);
+  transform: perspective(1000px) translateY(-10px) scale(1.02);
+  box-shadow: 0 25px 40px rgba(0,0,0,0.6), 0 0 20px rgba(0,229,255,0.25), inset 0 0 15px rgba(0,229,255,0.05);
+  z-index: 10;
+}
 .glass-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,rgba(0,229,255,0.5),transparent);
 }
 .glass-card.purple-tint{background:rgba(124,58,237,0.07);border-color:rgba(124,58,237,0.2)}
+.glass-card.purple-tint:hover{
+  border-color:rgba(124,58,237,0.5);
+  box-shadow: 0 25px 40px rgba(0,0,0,0.6), 0 0 20px rgba(124,58,237,0.25), inset 0 0 15px rgba(124,58,237,0.05);
+}
 .glass-card.purple-tint::before{background:linear-gradient(90deg,transparent,rgba(124,58,237,0.6),transparent)}
 .glass-card.green-tint{background:rgba(0,255,136,0.04);border-color:rgba(0,255,136,0.15)}
+.glass-card.green-tint:hover{
+  border-color:rgba(0,255,136,0.5);
+  box-shadow: 0 25px 40px rgba(0,0,0,0.6), 0 0 20px rgba(0,255,136,0.25), inset 0 0 15px rgba(0,255,136,0.05);
+}
 
 .card-title{
   font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;
@@ -367,7 +382,7 @@ input[type=range]::-webkit-slider-thumb{
 .base-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 
 /* ── HOME HERO ────────────────────────────────────────────────────── */
-.hero{text-align:center;padding:44px 0 36px;position:relative}
+.hero{text-align:center;padding:44px 0 36px;position:relative;z-index:1}
 .hero-title{
   font-family:'Orbitron',sans-serif;
   font-size:clamp(30px,6vw,60px);
@@ -437,7 +452,7 @@ canvas{cursor:crosshair;display:block}
 /* ── DIVIDER ──────────────────────────────────────────────────────── */
 .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:22px 0}
 </style>
-<link rel="icon" href="data:,"></head>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>"></head>
 <body>
 
 <!-- ═══════════════════════════════════════════════════════════════ NAV -->
@@ -448,8 +463,8 @@ canvas{cursor:crosshair;display:block}
         <div class="dot"></div>
         <div class="dot"></div>
       </div>
-      HELIXDB
-      <div class="nav-tag">v2.0</div>
+      SynthByte
+      <div class="nav-tag"></div>
     </div>
     <button class="nav-btn active" id="nb-home"    onclick="go('home')">Home</button>
     <button class="nav-btn"        id="nb-storage" onclick="go('storage')">Storage</button>
@@ -466,18 +481,21 @@ canvas{cursor:crosshair;display:block}
 
   <div class="hero">
     <div class="hero-title">
-      <span class="l1">HELIXDB</span>
-      <span class="l2">DNA Computing Interface</span>
+      <span class="l1">SynthByte</span>
     </div>
-    <p class="hero-sub">Encode information into synthetic DNA. Generate molecular barcodes. Visualize genetic structures. All inside your browser — no installation required.</p>
+    <div class="h1">
+      <span class="h1">DNA Computing Made Easy</span>
+    </div>
+    <p class="hero-sub">Encode information into synthetic DNA. Generate molecular barcodes. Visualize genetic structures. </p>
     <div class="hero-chips">
       <div class="chip">Encoding: <b>2-bit/base</b></div>
       <div class="chip">Alphabet: <b>A · T · G · C</b></div>
       <div class="chip">Algorithm: <b>Hamming Distance</b></div>
       <div class="chip">Export: <b>FASTA Format</b></div>
-      <div class="chip">100% <b>Client-Side</b></div>
     </div>
-    <canvas id="home-helix" style="border-radius:12px;max-width:100%"></canvas>
+  </div>
+  <div id="helix-wrapper" style="width: 100vw; height: 460px; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; margin-bottom: 40px; pointer-events: none;">
+    <canvas id="home-helix" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
   </div>
 
   <!-- Feature Cards -->
@@ -847,6 +865,7 @@ canvas{cursor:crosshair;display:block}
 </main>
 
 <!-- ═══════════════════════════════════════════════════════════════ JS ENGINE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 'use strict';
 
@@ -1202,73 +1221,176 @@ strandCv.addEventListener('mouseleave',function(){
 // Resize handler
 window.addEventListener('resize',()=>{resizeStrand();drawStrand();});
 
-/* ── HOME HELIX ANIMATION ────────────────────────────────────────────────── */
-const homeCv=$('home-helix');
-const homeCtx=homeCv.getContext('2d');
-let helixT=0;
+/* ── HOME HELIX ANIMATION (THREE.JS 3D MODEL) ────────────────────────────── */
+let scene, camera, renderer, dnaGroup, particles;
+let helixT = 0;
 
 function initHomeHelix(){
-  const W=Math.min(homeCv.parentElement.clientWidth||700,700);
-  const H=260;
-  homeCv.width=W;homeCv.height=H;
-  homeCv.style.width='100%';
-  homeCv.style.maxWidth=W+'px';
+  const container = $('home-helix').parentElement;
+  
+  // Create Scene
+  scene = new THREE.Scene();
+
+  // Create Camera
+  const wrapper = $('helix-wrapper') || { clientWidth: window.innerWidth, clientHeight: 460 };
+  const W = window.innerWidth;
+  const H = wrapper.clientHeight;
+  camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
+  camera.position.z = 45;
+
+  // Create Renderer attached to existing canvas
+  renderer = new THREE.WebGLRenderer({ canvas: $('home-helix'), alpha: true, antialias: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambientLight);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  dirLight.position.set(10, 20, 30);
+  scene.add(dirLight);
+
+  dnaGroup = new THREE.Group();
+  scene.add(dnaGroup);
+
+  // Build the 3D DNA Double Helix
+  const numBasePairs = 40;
+  const radius = 3;
+  const heightStrand = 40;
+  
+  // Materials
+  const backboneMaterial = new THREE.MeshPhongMaterial({ 
+    color: 0x111111, 
+    specular: 0x555555, 
+    shininess: 100 
+  });
+  
+  const colors = [0x00e5ff, 0x7c3aed, 0xec4899, 0x00ff88];
+  
+  class HelixCurve extends THREE.Curve {
+    constructor(radius, height, numTurns, phase) {
+      super();
+      this.radius = radius;
+      this.height = height;
+      this.numTurns = numTurns;
+      this.phase = phase;
+    }
+    getPoint(t, optionalTarget = new THREE.Vector3()) {
+      const angle = t * Math.PI * 2 * this.numTurns + this.phase;
+      const x = Math.cos(angle) * this.radius;
+      const z = Math.sin(angle) * this.radius;
+      const y = (t - 0.5) * this.height;
+      return optionalTarget.set(x, y, z);
+    }
+  }
+
+  const curve1 = new HelixCurve(radius, heightStrand, 3, 0);
+  const curve2 = new HelixCurve(radius, heightStrand, 3, Math.PI);
+  
+  const tubeGeom1 = new THREE.TubeGeometry(curve1, 150, 0.6, 8, false);
+  const tubeGeom2 = new THREE.TubeGeometry(curve2, 150, 0.6, 8, false);
+  
+  const backbone1 = new THREE.Mesh(tubeGeom1, backboneMaterial);
+  const backbone2 = new THREE.Mesh(tubeGeom2, backboneMaterial);
+  dnaGroup.add(backbone1);
+  dnaGroup.add(backbone2);
+
+  // Add Rungs
+  for(let i=0; i<numBasePairs; i++) {
+    const t = i / (numBasePairs - 1);
+    const p1 = curve1.getPoint(t);
+    const p2 = curve2.getPoint(t);
+    
+    // Center point
+    const center = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+    
+    // Glow materials
+    const colIdx1 = i % 4;
+    const colIdx2 = (colIdx1 + 2) % 4;
+    
+    const halfRungGeom = new THREE.CylinderGeometry(0.25, 0.25, radius + 0.2, 12);
+    halfRungGeom.rotateX(Math.PI / 2);
+    
+    const mat1 = new THREE.MeshPhongMaterial({ 
+      color: colors[colIdx1], emissive: colors[colIdx1], emissiveIntensity: 0.8
+    });
+    const mat2 = new THREE.MeshPhongMaterial({ 
+      color: colors[colIdx2], emissive: colors[colIdx2], emissiveIntensity: 0.8
+    });
+    
+    const mesh1 = new THREE.Mesh(halfRungGeom, mat1);
+    mesh1.position.copy(p1).lerp(center, 0.5);
+    mesh1.lookAt(p2);
+    dnaGroup.add(mesh1);
+    
+    const mesh2 = new THREE.Mesh(halfRungGeom, mat2);
+    mesh2.position.copy(p2).lerp(center, 0.5);
+    mesh2.lookAt(p1);
+    dnaGroup.add(mesh2);
+  }
+
+  // Floating particles in background
+  const pGeom = new THREE.BufferGeometry();
+  const pCount = 200;
+  const pPos = new Float32Array(pCount * 3);
+  for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 80;
+  pGeom.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  const pMat = new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.3, transparent: true, opacity: 0.6 });
+  particles = new THREE.Points(pGeom, pMat);
+  scene.add(particles);
+
+  // Rotate DNA diagonal
+  dnaGroup.rotation.z = -Math.PI / 6;
+  dnaGroup.scale.set(1.5, 1.5, 1.5);
 }
 initHomeHelix();
 
 function drawHomeHelix(){
-  const W=homeCv.width,H=homeCv.height;
-  homeCtx.clearRect(0,0,W,H);
-  const n=Math.floor(W/14);
-  const bw=W/n;
-  const cy=H/2;
-
-  // Draw smooth backbone curves
-  homeCtx.beginPath();
-  for(let i=0;i<=n;i++){
-    const x=i*bw;const y=cy+Math.sin(helixT+i*0.28)*90;
-    if(i===0)homeCtx.moveTo(x,y);else homeCtx.lineTo(x,y);
-  }
-  homeCtx.strokeStyle='rgba(0,180,216,0.45)';homeCtx.lineWidth=2.5;homeCtx.stroke();
-
-  homeCtx.beginPath();
-  for(let i=0;i<=n;i++){
-    const x=i*bw;const y=cy+Math.sin(helixT+i*0.28+Math.PI)*90;
-    if(i===0)homeCtx.moveTo(x,y);else homeCtx.lineTo(x,y);
-  }
-  homeCtx.strokeStyle='rgba(124,58,237,0.45)';homeCtx.lineWidth=2.5;homeCtx.stroke();
-
-  // Base pairs & dots
-  for(let i=0;i<n;i++){
-    const x=i*bw+bw/2;
-    const y1=cy+Math.sin(helixT+i*0.28)*90;
-    const y2=cy+Math.sin(helixT+i*0.28+Math.PI)*90;
-    const crossAmt=Math.abs(Math.sin(helixT+i*0.28));
-
-    // Rung (only near crossing)
-    if(crossAmt<0.35){
-      homeCtx.strokeStyle=`rgba(0,229,255,${(0.35-crossAmt)*0.6})`;
-      homeCtx.lineWidth=0.8;homeCtx.beginPath();homeCtx.moveTo(x,y1);homeCtx.lineTo(x,y2);homeCtx.stroke();
-    }
-
-    // Dot top
-    const bases=BASES;const b=bases[i%4];
-    homeCtx.beginPath();homeCtx.arc(x,y1,3.5,0,Math.PI*2);
-    homeCtx.fillStyle=BASE_COLS[b]+'cc';homeCtx.fill();
-
-    // Dot bottom (complement)
-    const cb=COMP[b];
-    homeCtx.beginPath();homeCtx.arc(x,y2,3.5,0,Math.PI*2);
-    homeCtx.fillStyle=BASE_COLS[cb]+'cc';homeCtx.fill();
-  }
+  // Kept for signature compatibility if called elsewhere manually
 }
+
+let animMouseX = 0;
+let animMouseY = 0;
+window.addEventListener('mousemove', (e) => {
+  animMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+  animMouseY = (e.clientY / window.innerHeight) * 2 - 1;
+});
 
 let helixRaf;
 function animHelix(){
-  if(helixRunning){helixT+=0.022*helixSpd;drawHomeHelix()}
-  helixRaf=requestAnimationFrame(animHelix);
+  if(helixRunning && scene){
+    helixT += 0.01 * helixSpd;
+    
+    dnaGroup.rotation.x = helixT;
+    
+    // Smooth Parallax
+    dnaGroup.position.x += (animMouseX * 4 - dnaGroup.position.x) * 0.05;
+    dnaGroup.position.y += (-animMouseY * 4 - dnaGroup.position.y) * 0.05;
+    dnaGroup.rotation.y += (animMouseX * 0.2 - dnaGroup.rotation.y) * 0.05;
+
+    if(particles) {
+      particles.rotation.y += 0.001;
+      particles.position.x += (animMouseX * 2 - particles.position.x) * 0.05;
+      particles.position.y += (-animMouseY * 2 - particles.position.y) * 0.05;
+    }
+
+    renderer.render(scene, camera);
+  }
+  helixRaf = requestAnimationFrame(animHelix);
 }
 animHelix();
+
+// Resize observer for 3d canvas
+window.addEventListener('resize', () => {
+    if(camera && renderer) {
+        const wrapper = $('helix-wrapper') || { clientHeight: 460 };
+        const W = window.innerWidth;
+        const H = wrapper.clientHeight;
+        camera.aspect = W / H;
+        camera.updateProjectionMatrix();
+        renderer.setSize(W, H);
+    }
+});
 
 /* ── INIT ────────────────────────────────────────────────────────────────── */
 updateVisUI();
