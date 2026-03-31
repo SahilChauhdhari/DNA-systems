@@ -1,1338 +1,2078 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SynthByte</title>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
-<style>
-/* ── RESET & ROOT ─────────────────────────────────────────────────── */
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#030a14;--bg2:#071220;--bg3:#0a1a2e;
-  --cyan:#00e5ff;--teal:#00b4d8;--blue:#0077b6;
-  --purple:#7c3aed;--pink:#ec4899;--green:#00ff88;--amber:#f59e0b;
-  --text:#e0f4ff;--muted:#5a8aaa;--muted2:#3a5a72;
-  --glass:rgba(0,180,216,0.07);--glass2:rgba(0,229,255,0.04);
-  --border:rgba(0,229,255,0.15);--border2:rgba(0,229,255,0.08);
-  --shadow:0 8px 32px rgba(0,0,0,0.4);
-}
-html{scroll-behavior:smooth}
-body{
-  background:var(--bg);color:var(--text);
-  font-family:'Rajdhani',sans-serif;min-height:100vh;
-  overflow-x:hidden;line-height:1.5;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SynthByte</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ── RESET & ROOT ─────────────────────────────────────────────────── */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* ── AMBIENT BACKGROUND ───────────────────────────────────────────── */
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 70% 60% at 15% 10%,rgba(0,119,182,0.14) 0%,transparent 60%),
-    radial-gradient(ellipse 50% 50% at 85% 90%,rgba(124,58,237,0.10) 0%,transparent 60%),
-    radial-gradient(ellipse 40% 30% at 50% 50%,rgba(0,229,255,0.03) 0%,transparent 70%);
-}
-/* Animated grid overlay */
-body::after{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px);
-  background-size:60px 60px;
-  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);
-}
+    :root {
+      --bg: #030a14;
+      --bg2: #071220;
+      --bg3: #0a1a2e;
+      --cyan: #00e5ff;
+      --teal: #00b4d8;
+      --blue: #0077b6;
+      --purple: #7c3aed;
+      --pink: #ec4899;
+      --green: #00ff88;
+      --amber: #f59e0b;
+      --text: #e0f4ff;
+      --muted: #5a8aaa;
+      --muted2: #3a5a72;
+      --glass: rgba(0, 180, 216, 0.07);
+      --glass2: rgba(0, 229, 255, 0.04);
+      --border: rgba(0, 229, 255, 0.15);
+      --border2: rgba(0, 229, 255, 0.08);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
 
-/* ── NAVIGATION ───────────────────────────────────────────────────── */
-nav{
-  position:sticky;top:0;z-index:1000;
-  background:rgba(3,10,20,0.92);
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-}
-.nav-inner{
-  max-width:1140px;margin:0 auto;
-  display:flex;align-items:center;gap:4px;
-  height:62px;padding:0 28px;
-}
-.nav-logo{
-  font-family:'Orbitron',sans-serif;font-size:19px;font-weight:900;
-  color:var(--cyan);letter-spacing:3px;margin-right:auto;
-  display:flex;align-items:center;gap:10px;cursor:pointer;
-  text-shadow:0 0 20px rgba(0,229,255,0.4);
-}
-.nav-logo .helix-icon{
-  width:28px;height:28px;position:relative;
-  display:flex;align-items:center;justify-content:center;
-}
-.nav-logo .dot{
-  width:8px;height:8px;border-radius:50%;
-  position:absolute;animation:helixDot 2s infinite ease-in-out;
-}
-.nav-logo .dot:nth-child(1){background:var(--cyan);top:2px;animation-delay:0s}
-.nav-logo .dot:nth-child(2){background:var(--purple);bottom:2px;animation-delay:1s}
-@keyframes helixDot{
-  0%,100%{left:4px}
-  50%{left:16px}
-}
-.nav-tag{
-  font-size:9px;letter-spacing:2px;color:var(--muted);
-  text-transform:uppercase;font-family:'Share Tech Mono';
-  margin-left:2px;margin-top:2px;
-}
-.nav-btn{
-  background:none;border:none;cursor:pointer;
-  padding:8px 18px;color:var(--muted);
-  font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;
-  letter-spacing:1.5px;text-transform:uppercase;border-radius:6px;
-  transition:all .25s;position:relative;white-space:nowrap;
-}
-.nav-btn:hover{color:var(--cyan);background:rgba(0,229,255,0.05)}
-.nav-btn.active{color:var(--cyan)}
-.nav-btn.active::after{
-  content:'';position:absolute;bottom:-1px;left:8px;right:8px;
-  height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);
-  border-radius:2px;box-shadow:0 0 8px var(--cyan);
-}
+    html {
+      scroll-behavior: smooth
+    }
 
-/* ── MAIN WRAPPER ─────────────────────────────────────────────────── */
-main{
-  max-width:1140px;margin:0 auto;
-  padding:36px 28px 80px;position:relative;z-index:1;
-}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
 
-/* ── SECTIONS ─────────────────────────────────────────────────────── */
-.section{display:none}
-.section.active{
-  display:block;
-  animation:sectionIn .45s cubic-bezier(.25,.46,.45,.94) both;
-}
-@keyframes sectionIn{
-  from{opacity:0;transform:translateY(16px)}
-  to{opacity:1;transform:translateY(0)}
-}
+    /* ── AMBIENT BACKGROUND ───────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 60% at 15% 10%, rgba(0, 119, 182, 0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 85% 90%, rgba(124, 58, 237, 0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 50% 50%, rgba(0, 229, 255, 0.03) 0%, transparent 70%);
+    }
 
-/* ── GLASS CARDS ──────────────────────────────────────────────────── */
-.glass-card{
-  background:var(--glass);
-  border:1px solid var(--border);
-  border-radius:14px;padding:26px;margin-bottom:22px;
-  position:relative;overflow:hidden;
-  box-shadow:var(--shadow);
-  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  transform: perspective(1000px) translateY(0);
-}
-.glass-card:hover{
-  border-color:rgba(0,229,255,0.5);
-  transform: perspective(1000px) translateY(-10px) scale(1.02);
-  box-shadow: 0 25px 40px rgba(0,0,0,0.6), 0 0 20px rgba(0,229,255,0.25), inset 0 0 15px rgba(0,229,255,0.05);
-  z-index: 10;
-}
-.glass-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(0,229,255,0.5),transparent);
-}
-.glass-card.purple-tint{background:rgba(124,58,237,0.07);border-color:rgba(124,58,237,0.2)}
-.glass-card.purple-tint:hover{
-  border-color:rgba(124,58,237,0.5);
-  box-shadow: 0 25px 40px rgba(0,0,0,0.6), 0 0 20px rgba(124,58,237,0.25), inset 0 0 15px rgba(124,58,237,0.05);
-}
-.glass-card.purple-tint::before{background:linear-gradient(90deg,transparent,rgba(124,58,237,0.6),transparent)}
-.glass-card.green-tint{background:rgba(0,255,136,0.04);border-color:rgba(0,255,136,0.15)}
-.glass-card.green-tint:hover{
-  border-color:rgba(0,255,136,0.5);
-  box-shadow: 0 25px 40px rgba(0,0,0,0.6), 0 0 20px rgba(0,255,136,0.25), inset 0 0 15px rgba(0,255,136,0.05);
-}
+    /* Animated grid overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(0, 229, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    }
 
-.card-title{
-  font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;
-  letter-spacing:2.5px;color:var(--cyan);text-transform:uppercase;
-  margin-bottom:20px;display:flex;align-items:center;gap:10px;
-}
-.card-title .bar{
-  width:3px;height:14px;background:var(--cyan);border-radius:2px;
-  box-shadow:0 0 8px var(--cyan),0 0 16px rgba(0,229,255,0.3);
-}
-.card-title.purple{color:var(--purple)}
-.card-title.purple .bar{background:var(--purple);box-shadow:0 0 8px var(--purple)}
-.card-title.green{color:var(--green)}
-.card-title.green .bar{background:var(--green);box-shadow:0 0 8px var(--green)}
+    /* ── NAVIGATION ───────────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(3, 10, 20, 0.92);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
 
-/* ── GRID ─────────────────────────────────────────────────────────── */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-@media(max-width:820px){
-  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
-  .nav-inner{padding:0 16px;gap:2px}
-  .nav-btn{padding:6px 10px;font-size:11px;letter-spacing:.5px}
-  main{padding:24px 16px 60px}
-}
+    .nav-inner {
+      max-width: 1140px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 62px;
+      padding: 0 28px;
+    }
 
-/* ── INPUTS ───────────────────────────────────────────────────────── */
-textarea,input[type=text]{
-  width:100%;background:rgba(0,8,18,0.7);
-  border:1px solid var(--border2);border-radius:8px;
-  padding:12px 16px;color:var(--text);
-  font-family:'Share Tech Mono',monospace;font-size:13px;
-  resize:vertical;transition:all .2s;outline:none;
-}
-textarea:focus,input[type=text]:focus{
-  border-color:var(--cyan);
-  box-shadow:0 0 0 2px rgba(0,229,255,0.12),0 0 16px rgba(0,229,255,0.06);
-}
-textarea::placeholder,input::placeholder{color:var(--muted2)}
-label{
-  display:block;font-size:11px;font-weight:600;
-  letter-spacing:1.5px;color:var(--muted);
-  text-transform:uppercase;margin-bottom:8px;
-}
+    .nav-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 19px;
+      font-weight: 900;
+      color: var(--cyan);
+      letter-spacing: 3px;
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+    }
 
-/* ── BUTTONS ──────────────────────────────────────────────────────── */
-.btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:11px 26px;border-radius:8px;border:none;cursor:pointer;
-  font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;
-  letter-spacing:1.5px;text-transform:uppercase;
-  transition:all .22s;position:relative;overflow:hidden;
-  white-space:nowrap;
-}
-.btn::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);
-  opacity:0;transition:opacity .2s;
-}
-.btn:hover::after{opacity:1}
-.btn-cyan{
-  background:linear-gradient(135deg,#0097b2,#005f8a);
-  color:#fff;box-shadow:0 4px 16px rgba(0,150,178,0.3);
-}
-.btn-cyan:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,229,255,0.4)}
-.btn-cyan:active{transform:translateY(0)}
-.btn-purple{
-  background:linear-gradient(135deg,#6d28d9,#9c2cad);
-  color:#fff;box-shadow:0 4px 16px rgba(109,40,217,0.3);
-}
-.btn-purple:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(124,58,237,0.4)}
-.btn-green{
-  background:linear-gradient(135deg,#059669,#047857);
-  color:#fff;box-shadow:0 4px 16px rgba(5,150,105,0.3);
-}
-.btn-green:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,255,136,0.3)}
-.btn-ghost{
-  background:transparent;border:1px solid var(--border);
-  color:var(--muted);
-}
-.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,0.05)}
-.btn-sm{padding:7px 16px;font-size:12px;letter-spacing:1px}
-.btn-xs{padding:5px 12px;font-size:11px;letter-spacing:.5px}
-.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+    .nav-logo .helix-icon {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-/* ── DNA SEQUENCE DISPLAY ─────────────────────────────────────────── */
-.dna-display{
-  font-family:'Share Tech Mono',monospace;font-size:13px;
-  line-height:2;word-break:break-all;
-  padding:16px;background:rgba(0,0,0,0.5);
-  border-radius:8px;border:1px solid var(--border2);
-  max-height:180px;overflow-y:auto;
-}
-.dna-display .A{color:#00e5ff;font-weight:700}
-.dna-display .T{color:#ec4899;font-weight:700}
-.dna-display .G{color:#00ff88;font-weight:700}
-.dna-display .C{color:#f59e0b;font-weight:700}
-.dna-display .codon{
-  display:inline-block;margin:0 1px;
-  padding:1px 2px;border-radius:3px;cursor:default;
-  transition:background .15s;
-}
-.dna-display .codon:hover{background:rgba(0,229,255,0.12)}
+    .nav-logo .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      position: absolute;
+      animation: helixDot 2s infinite ease-in-out;
+    }
 
-/* ── BINARY DISPLAY ───────────────────────────────────────────────── */
-.binary-display{
-  font-family:'Share Tech Mono',monospace;font-size:11px;
-  color:var(--muted2);word-break:break-all;
-  max-height:72px;overflow-y:auto;
-  padding:10px 12px;background:rgba(0,0,0,0.4);
-  border-radius:6px;border:1px solid var(--border2);line-height:1.9;
-}
-.binary-display .byte{color:#1e7090;margin-right:5px}
+    .nav-logo .dot:nth-child(1) {
+      background: var(--cyan);
+      top: 2px;
+      animation-delay: 0s
+    }
 
-/* ── STEP PIPELINE ────────────────────────────────────────────────── */
-.step-flow{display:flex;flex-direction:column;gap:16px}
-.step-item{display:flex;align-items:flex-start;gap:14px}
-.step-num{
-  width:26px;height:26px;border-radius:50%;flex-shrink:0;
-  background:rgba(0,229,255,0.08);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Orbitron';font-size:9px;color:var(--cyan);
-  margin-top:2px;box-shadow:0 0 8px rgba(0,229,255,0.1);
-}
-.step-body{flex:1;min-width:0}
-.step-label{
-  font-size:10px;font-weight:600;letter-spacing:1.5px;
-  color:var(--muted);text-transform:uppercase;margin-bottom:6px;
-  display:flex;align-items:center;gap:8px;
-}
-.step-label .badge-sm{
-  font-size:9px;letter-spacing:.5px;padding:2px 8px;border-radius:8px;
-  background:rgba(0,229,255,0.08);border:1px solid var(--border2);
-  color:var(--cyan);
-}
+    .nav-logo .dot:nth-child(2) {
+      background: var(--purple);
+      bottom: 2px;
+      animation-delay: 1s
+    }
 
-/* ── STAT BLOCKS ──────────────────────────────────────────────────── */
-.stat-block{
-  padding:16px;background:rgba(0,0,0,0.35);
-  border-radius:8px;border:1px solid var(--border2);
-}
-.stat-val{
-  font-family:'Orbitron',sans-serif;font-size:24px;font-weight:900;
-  line-height:1;margin-bottom:6px;
-}
-.stat-lab{
-  font-size:10px;font-weight:600;letter-spacing:1.5px;
-  color:var(--muted);text-transform:uppercase;
-}
+    @keyframes helixDot {
 
-/* ── BARCODE ──────────────────────────────────────────────────────── */
-.barcode-wrap{
-  background:#000;border-radius:10px;padding:22px 20px 18px;
-  border:1px solid #111;text-align:center;
-}
-.barcode-id{
-  font-family:'Share Tech Mono';font-size:13px;color:var(--cyan);
-  margin-bottom:14px;letter-spacing:3px;
-}
+      0%,
+      100% {
+        left: 4px
+      }
 
-/* ── COMPARE ALIGN ────────────────────────────────────────────────── */
-.align-row{
-  font-family:'Share Tech Mono';font-size:12px;line-height:2;
-  word-break:break-all;padding:14px;
-  background:rgba(0,0,0,0.5);border-radius:8px;
-  border:1px solid var(--border2);max-height:160px;overflow-y:auto;
-}
-.align-row .m{color:var(--green);background:rgba(0,255,136,0.08);padding:0 1px;border-radius:2px}
-.align-row .x{color:var(--pink);background:rgba(236,72,153,0.1);padding:0 1px;border-radius:2px;text-decoration:underline wavy rgba(236,72,153,0.5)}
-.align-row .g{color:var(--muted2);background:rgba(0,0,0,0.3);padding:0 1px;border-radius:2px}
+      50% {
+        left: 16px
+      }
+    }
 
-/* ── SIMILARITY BAR ───────────────────────────────────────────────── */
-.sim-track{height:10px;border-radius:5px;background:rgba(255,255,255,0.06);overflow:hidden;margin:14px 0 6px}
-.sim-fill{height:100%;border-radius:5px;transition:width .9s cubic-bezier(.4,0,.2,1)}
+    .nav-tag {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-family: 'Share Tech Mono';
+      margin-left: 2px;
+      margin-top: 2px;
+    }
 
-/* ── OUTPUT AREAS ─────────────────────────────────────────────────── */
-.output-section{
-  opacity:0;transform:translateY(10px);
-  transition:all .45s cubic-bezier(.25,.46,.45,.94);
-  pointer-events:none;
-}
-.output-section.show{opacity:1;transform:translateY(0);pointer-events:all}
+    .nav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px 18px;
+      color: var(--muted);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 6px;
+      transition: all .25s;
+      position: relative;
+      white-space: nowrap;
+    }
 
-/* ── COPY BUTTON ──────────────────────────────────────────────────── */
-.copy-wrap{position:relative}
-.copy-btn{
-  position:absolute;top:8px;right:8px;
-  background:rgba(0,229,255,0.08);border:1px solid var(--border2);
-  border-radius:5px;padding:4px 10px;font-size:10px;color:var(--muted);
-  cursor:pointer;font-family:'Share Tech Mono';letter-spacing:.5px;
-  transition:all .2s;
-}
-.copy-btn:hover{color:var(--cyan);border-color:var(--cyan)}
+    .nav-btn:hover {
+      color: var(--cyan);
+      background: rgba(0, 229, 255, 0.05)
+    }
 
-/* ── MESSAGES ─────────────────────────────────────────────────────── */
-.error-msg{
-  padding:11px 16px;background:rgba(236,72,153,0.08);
-  border:1px solid rgba(236,72,153,0.25);border-radius:8px;
-  color:var(--pink);font-size:13px;margin-top:12px;display:none;
-}
-.info-msg{
-  padding:11px 16px;background:var(--glass2);
-  border:1px solid var(--border2);border-radius:8px;
-  color:var(--muted);font-size:12px;margin-top:12px;line-height:1.6;
-}
+    .nav-btn.active {
+      color: var(--cyan)
+    }
 
-/* ── BASE HOVER INFO ──────────────────────────────────────────────── */
-.base-info{
-  padding:12px 16px;background:var(--glass2);
-  border:1px solid var(--border2);border-radius:8px;
-  font-size:13px;min-height:46px;display:flex;align-items:center;
-  color:var(--muted);transition:all .3s;margin-top:12px;
-}
-.base-info.lit{
-  background:rgba(0,229,255,0.06);border-color:rgba(0,229,255,0.3);
-  color:var(--text);
-}
+    .nav-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 8px;
+      right: 8px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      border-radius: 2px;
+      box-shadow: 0 0 8px var(--cyan);
+    }
 
-/* ── VIS CONTROLS ─────────────────────────────────────────────────── */
-.vis-controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
-.slider-wrap{display:flex;align-items:center;gap:10px}
-.slider-wrap label{margin:0;white-space:nowrap;font-size:10px;color:var(--muted)}
-input[type=range]{
-  -webkit-appearance:none;height:4px;border-radius:2px;
-  background:rgba(0,229,255,0.15);outline:none;
-  accent-color:var(--cyan);cursor:pointer;width:90px;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
-  background:var(--cyan);cursor:pointer;
-  box-shadow:0 0 6px rgba(0,229,255,0.5);
-}
+    /* ── MAIN WRAPPER ─────────────────────────────────────────────────── */
+    main {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 36px 28px 80px;
+      position: relative;
+      z-index: 1;
+    }
 
-/* ── BASE LEGEND ──────────────────────────────────────────────────── */
-.base-legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:18px}
-.base-pill{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500}
-.base-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    /* ── SECTIONS ─────────────────────────────────────────────────────── */
+    .section {
+      display: none
+    }
 
-/* ── HOME HERO ────────────────────────────────────────────────────── */
-.hero{text-align:center;padding:44px 0 36px;position:relative;z-index:1}
-.hero-title{
-  font-family:'Orbitron',sans-serif;
-  font-size:clamp(30px,6vw,60px);
-  font-weight:900;line-height:1.05;margin-bottom:10px;
-}
-.hero-title .l1{
-  display:block;
-  background:linear-gradient(135deg,var(--cyan) 0%,var(--teal) 50%,#005f8a 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  text-shadow:none;filter:drop-shadow(0 0 30px rgba(0,229,255,0.3));
-}
-.hero-title .l2{
-  display:block;
-  background:linear-gradient(135deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  filter:drop-shadow(0 0 20px rgba(124,58,237,0.3));
-}
-.hero-sub{
-  color:var(--muted);font-size:15px;font-weight:400;
-  max-width:580px;margin:0 auto 36px;line-height:1.7;
-}
-.hero-chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:44px}
-.chip{
-  background:rgba(0,229,255,0.06);border:1px solid var(--border);
-  border-radius:20px;padding:7px 18px;font-size:12px;font-weight:600;
-  letter-spacing:.8px;color:var(--cyan);white-space:nowrap;
-}
-.chip b{color:var(--green);font-family:'Share Tech Mono'}
+    .section.active {
+      display: block;
+      animation: sectionIn .45s cubic-bezier(.25, .46, .45, .94) both;
+    }
 
-/* ── SECTION HEADER ───────────────────────────────────────────────── */
-.sec-header{margin-bottom:30px}
-.sec-title{
-  font-family:'Orbitron',sans-serif;font-size:clamp(20px,4vw,28px);
-  font-weight:900;color:var(--text);margin-bottom:6px;
-}
-.sec-title span{
-  background:linear-gradient(135deg,var(--cyan),var(--teal));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-}
-.sec-desc{color:var(--muted);font-size:14px;line-height:1.7}
+    @keyframes sectionIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px)
+      }
 
-/* ── ENCODING SCHEMA TABLE ────────────────────────────────────────── */
-.schema-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.schema-cell{
-  padding:16px 12px;background:rgba(0,0,0,0.4);
-  border-radius:10px;border:1px solid var(--border2);
-  text-align:center;transition:all .25s;cursor:default;
-}
-.schema-cell:hover{border-color:var(--border);transform:translateY(-2px)}
-.schema-base{font-family:'Share Tech Mono';font-size:28px;font-weight:700;margin-bottom:6px}
-.schema-bits{font-family:'Share Tech Mono';font-size:12px;color:var(--muted);margin-bottom:4px}
-.schema-name{font-size:11px;color:var(--muted2);letter-spacing:.5px}
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
 
-/* ── COMPOSITION BARS ─────────────────────────────────────────────── */
-.comp-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.comp-bar-track{flex:1;height:18px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden}
-.comp-bar-fill{height:100%;border-radius:4px;transition:width .7s ease}
+    /* ── GLASS CARDS ──────────────────────────────────────────────────── */
+    .glass-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 26px;
+      margin-bottom: 22px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform: perspective(1000px) translateY(0);
+    }
 
-/* ── SCROLLBAR ────────────────────────────────────────────────────── */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(0,229,255,0.2);border-radius:2px}
+    .glass-card:hover {
+      border-color: rgba(0, 229, 255, 0.5);
+      transform: perspective(1000px) translateY(-10px) scale(1.02);
+      box-shadow: 0 25px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 229, 255, 0.25), inset 0 0 15px rgba(0, 229, 255, 0.05);
+      z-index: 10;
+    }
 
-/* ── CANVAS CURSOR ────────────────────────────────────────────────── */
-canvas{cursor:crosshair;display:block}
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.5), transparent);
+    }
 
-/* ── DIVIDER ──────────────────────────────────────────────────────── */
-.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:22px 0}
-</style>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>"></head>
+    .glass-card.purple-tint {
+      background: rgba(124, 58, 237, 0.07);
+      border-color: rgba(124, 58, 237, 0.2)
+    }
+
+    .glass-card.purple-tint:hover {
+      border-color: rgba(124, 58, 237, 0.5);
+      box-shadow: 0 25px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(124, 58, 237, 0.25), inset 0 0 15px rgba(124, 58, 237, 0.05);
+    }
+
+    .glass-card.purple-tint::before {
+      background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.6), transparent)
+    }
+
+    .glass-card.green-tint {
+      background: rgba(0, 255, 136, 0.04);
+      border-color: rgba(0, 255, 136, 0.15)
+    }
+
+    .glass-card.green-tint:hover {
+      border-color: rgba(0, 255, 136, 0.5);
+      box-shadow: 0 25px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 255, 136, 0.25), inset 0 0 15px rgba(0, 255, 136, 0.05);
+    }
+
+    .card-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title .bar {
+      width: 3px;
+      height: 14px;
+      background: var(--cyan);
+      border-radius: 2px;
+      box-shadow: 0 0 8px var(--cyan), 0 0 16px rgba(0, 229, 255, 0.3);
+    }
+
+    .card-title.purple {
+      color: var(--purple)
+    }
+
+    .card-title.purple .bar {
+      background: var(--purple);
+      box-shadow: 0 0 8px var(--purple)
+    }
+
+    .card-title.green {
+      color: var(--green)
+    }
+
+    .card-title.green .bar {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green)
+    }
+
+    /* ── GRID ─────────────────────────────────────────────────────────── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px
+    }
+
+    @media(max-width:820px) {
+
+      .grid-2,
+      .grid-3,
+      .grid-4 {
+        grid-template-columns: 1fr
+      }
+
+      .nav-inner {
+        padding: 0 16px;
+        gap: 2px
+      }
+
+      .nav-btn {
+        padding: 6px 10px;
+        font-size: 11px;
+        letter-spacing: .5px
+      }
+
+      main {
+        padding: 24px 16px 60px
+      }
+    }
+
+    /* ── INPUTS ───────────────────────────────────────────────────────── */
+    textarea,
+    input[type=text] {
+      width: 100%;
+      background: rgba(0, 8, 18, 0.7);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      resize: vertical;
+      transition: all .2s;
+      outline: none;
+    }
+
+    textarea:focus,
+    input[type=text]:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.12), 0 0 16px rgba(0, 229, 255, 0.06);
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      color: var(--muted2)
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* ── BUTTONS ──────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 26px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transition: all .22s;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+
+    .btn:hover::after {
+      opacity: 1
+    }
+
+    .btn-cyan {
+      background: linear-gradient(135deg, #0097b2, #005f8a);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0, 150, 178, 0.3);
+    }
+
+    .btn-cyan:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 229, 255, 0.4)
+    }
+
+    .btn-cyan:active {
+      transform: translateY(0)
+    }
+
+    .btn-purple {
+      background: linear-gradient(135deg, #6d28d9, #9c2cad);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(109, 40, 217, 0.3);
+    }
+
+    .btn-purple:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(124, 58, 237, 0.4)
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, #059669, #047857);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(5, 150, 105, 0.3);
+    }
+
+    .btn-green:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 255, 136, 0.3)
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: rgba(0, 229, 255, 0.05)
+    }
+
+    .btn-sm {
+      padding: 7px 16px;
+      font-size: 12px;
+      letter-spacing: 1px
+    }
+
+    .btn-xs {
+      padding: 5px 12px;
+      font-size: 11px;
+      letter-spacing: .5px
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      align-items: center
+    }
+
+    /* ── DNA SEQUENCE DISPLAY ─────────────────────────────────────────── */
+    .dna-display {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      line-height: 2;
+      word-break: break-all;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .dna-display .A {
+      color: #00e5ff;
+      font-weight: 700
+    }
+
+    .dna-display .T {
+      color: #ec4899;
+      font-weight: 700
+    }
+
+    .dna-display .G {
+      color: #00ff88;
+      font-weight: 700
+    }
+
+    .dna-display .C {
+      color: #f59e0b;
+      font-weight: 700
+    }
+
+    .dna-display .codon {
+      display: inline-block;
+      margin: 0 1px;
+      padding: 1px 2px;
+      border-radius: 3px;
+      cursor: default;
+      transition: background .15s;
+    }
+
+    .dna-display .codon:hover {
+      background: rgba(0, 229, 255, 0.12)
+    }
+
+    /* ── BINARY DISPLAY ───────────────────────────────────────────────── */
+    .binary-display {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted2);
+      word-break: break-all;
+      max-height: 72px;
+      overflow-y: auto;
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 6px;
+      border: 1px solid var(--border2);
+      line-height: 1.9;
+    }
+
+    .binary-display .byte {
+      color: #1e7090;
+      margin-right: 5px
+    }
+
+    /* ── STEP PIPELINE ────────────────────────────────────────────────── */
+    .step-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 16px
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron';
+      font-size: 9px;
+      color: var(--cyan);
+      margin-top: 2px;
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.1);
+    }
+
+    .step-body {
+      flex: 1;
+      min-width: 0
+    }
+
+    .step-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-label .badge-sm {
+      font-size: 9px;
+      letter-spacing: .5px;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid var(--border2);
+      color: var(--cyan);
+    }
+
+    /* ── STAT BLOCKS ──────────────────────────────────────────────────── */
+    .stat-block {
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+    }
+
+    .stat-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-lab {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── BARCODE ──────────────────────────────────────────────────────── */
+    .barcode-wrap {
+      background: #000;
+      border-radius: 10px;
+      padding: 22px 20px 18px;
+      border: 1px solid #111;
+      text-align: center;
+    }
+
+    .barcode-id {
+      font-family: 'Share Tech Mono';
+      font-size: 13px;
+      color: var(--cyan);
+      margin-bottom: 14px;
+      letter-spacing: 3px;
+    }
+
+    /* ── COMPARE ALIGN ────────────────────────────────────────────────── */
+    .align-row {
+      font-family: 'Share Tech Mono';
+      font-size: 12px;
+      line-height: 2;
+      word-break: break-all;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      max-height: 160px;
+      overflow-y: auto;
+    }
+
+    .align-row .m {
+      color: var(--green);
+      background: rgba(0, 255, 136, 0.08);
+      padding: 0 1px;
+      border-radius: 2px
+    }
+
+    .align-row .x {
+      color: var(--pink);
+      background: rgba(236, 72, 153, 0.1);
+      padding: 0 1px;
+      border-radius: 2px;
+      text-decoration: underline wavy rgba(236, 72, 153, 0.5)
+    }
+
+    .align-row .g {
+      color: var(--muted2);
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0 1px;
+      border-radius: 2px
+    }
+
+    /* ── SIMILARITY BAR ───────────────────────────────────────────────── */
+    .sim-track {
+      height: 10px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      margin: 14px 0 6px
+    }
+
+    .sim-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width .9s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    /* ── OUTPUT AREAS ─────────────────────────────────────────────────── */
+    .output-section {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .45s cubic-bezier(.25, .46, .45, .94);
+      pointer-events: none;
+    }
+
+    .output-section.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all
+    }
+
+    /* ── COPY BUTTON ──────────────────────────────────────────────────── */
+    .copy-wrap {
+      position: relative
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-size: 10px;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'Share Tech Mono';
+      letter-spacing: .5px;
+      transition: all .2s;
+    }
+
+    .copy-btn:hover {
+      color: var(--cyan);
+      border-color: var(--cyan)
+    }
+
+    /* ── MESSAGES ─────────────────────────────────────────────────────── */
+    .error-msg {
+      padding: 11px 16px;
+      background: rgba(236, 72, 153, 0.08);
+      border: 1px solid rgba(236, 72, 153, 0.25);
+      border-radius: 8px;
+      color: var(--pink);
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .info-msg {
+      padding: 11px 16px;
+      background: var(--glass2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    /* ── BASE HOVER INFO ──────────────────────────────────────────────── */
+    .base-info {
+      padding: 12px 16px;
+      background: var(--glass2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      font-size: 13px;
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      color: var(--muted);
+      transition: all .3s;
+      margin-top: 12px;
+    }
+
+    .base-info.lit {
+      background: rgba(0, 229, 255, 0.06);
+      border-color: rgba(0, 229, 255, 0.3);
+      color: var(--text);
+    }
+
+    /* ── VIS CONTROLS ─────────────────────────────────────────────────── */
+    .vis-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 18px
+    }
+
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .slider-wrap label {
+      margin: 0;
+      white-space: nowrap;
+      font-size: 10px;
+      color: var(--muted)
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(0, 229, 255, 0.15);
+      outline: none;
+      accent-color: var(--cyan);
+      cursor: pointer;
+      width: 90px;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--cyan);
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(0, 229, 255, 0.5);
+    }
+
+    /* ── BASE LEGEND ──────────────────────────────────────────────────── */
+    .base-legend {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 18px
+    }
+
+    .base-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 500
+    }
+
+    .base-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    /* ── HOME HERO ────────────────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 44px 0 36px;
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(30px, 6vw, 60px);
+      font-weight: 900;
+      line-height: 1.05;
+      margin-bottom: 10px;
+    }
+
+    .hero-title .l1 {
+      display: block;
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--teal) 50%, #005f8a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      filter: drop-shadow(0 0 30px rgba(0, 229, 255, 0.3));
+    }
+
+    .hero-title .l2 {
+      display: block;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.3));
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 400;
+      max-width: 580px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    .hero-chips {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 44px
+    }
+
+    .chip {
+      background: rgba(0, 229, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 7px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .8px;
+      color: var(--cyan);
+      white-space: nowrap;
+    }
+
+    .chip b {
+      color: var(--green);
+      font-family: 'Share Tech Mono'
+    }
+
+    /* ── SECTION HEADER ───────────────────────────────────────────────── */
+    .sec-header {
+      margin-bottom: 30px
+    }
+
+    .sec-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .sec-title span {
+      background: linear-gradient(135deg, var(--cyan), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .sec-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7
+    }
+
+    /* ── ENCODING SCHEMA TABLE ────────────────────────────────────────── */
+    .schema-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px
+    }
+
+    .schema-cell {
+      padding: 16px 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 10px;
+      border: 1px solid var(--border2);
+      text-align: center;
+      transition: all .25s;
+      cursor: default;
+    }
+
+    .schema-cell:hover {
+      border-color: var(--border);
+      transform: translateY(-2px)
+    }
+
+    .schema-base {
+      font-family: 'Share Tech Mono';
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 6px
+    }
+
+    .schema-bits {
+      font-family: 'Share Tech Mono';
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 4px
+    }
+
+    .schema-name {
+      font-size: 11px;
+      color: var(--muted2);
+      letter-spacing: .5px
+    }
+
+    /* ── COMPOSITION BARS ─────────────────────────────────────────────── */
+    .comp-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px
+    }
+
+    .comp-bar-track {
+      flex: 1;
+      height: 18px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 4px;
+      overflow: hidden
+    }
+
+    .comp-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width .7s ease
+    }
+
+    /* ── SCROLLBAR ────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 229, 255, 0.2);
+      border-radius: 2px
+    }
+
+    /* ── CANVAS CURSOR ────────────────────────────────────────────────── */
+    canvas {
+      cursor: crosshair;
+      display: block
+    }
+
+    /* ── DIVIDER ──────────────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+      margin: 22px 0
+    }
+  </style>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+
 <body>
 
-<!-- ═══════════════════════════════════════════════════════════════ NAV -->
-<nav>
-  <div class="nav-inner">
-    <div class="nav-logo" onclick="go('home')">
-      <div class="helix-icon">
-        <div class="dot"></div>
-        <div class="dot"></div>
+  <!-- ═══════════════════════════════════════════════════════════════ NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-logo" onclick="go('home')">
+        <div class="helix-icon">
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        SynthByte
+        <div class="nav-tag"></div>
       </div>
-      SynthByte
-      <div class="nav-tag"></div>
+      <button class="nav-btn active" id="nb-home" onclick="go('home')">Home</button>
+      <button class="nav-btn" id="nb-storage" onclick="go('storage')">Storage</button>
+      <button class="nav-btn" id="nb-files" onclick="go('files')">Files</button>
+      <button class="nav-btn" id="nb-images" onclick="go('images')">Images</button>
+      <button class="nav-btn" id="nb-barcode" onclick="go('barcode')">Barcode</button>
+      <button class="nav-btn" id="nb-compare" onclick="go('compare')">Compare</button>
+      <button class="nav-btn" id="nb-visual" onclick="go('visual')">Visualize</button>
     </div>
-    <button class="nav-btn active" id="nb-home"    onclick="go('home')">Home</button>
-    <button class="nav-btn"        id="nb-storage" onclick="go('storage')">Storage</button>
-    <button class="nav-btn"        id="nb-files"   onclick="go('files')">Files</button>
-    <button class="nav-btn"        id="nb-images"  onclick="go('images')">Images</button>
-    <button class="nav-btn"        id="nb-barcode" onclick="go('barcode')">Barcode</button>
-    <button class="nav-btn"        id="nb-compare" onclick="go('compare')">Compare</button>
-    <button class="nav-btn"        id="nb-visual"  onclick="go('visual')">Visualize</button>
-  </div>
-</nav>
+  </nav>
 
-<main>
+  <main>
 
-<!-- ═══════════════════════════════════════════════════════════════ HOME -->
-<section id="sec-home" class="section active">
+    <!-- ═══════════════════════════════════════════════════════════════ HOME -->
+    <section id="sec-home" class="section active">
 
-  <div class="hero">
-    <div class="hero-title">
-      <span class="l1">SynthByte</span>
-    </div>
-    <div class="h1">
-      <span class="h1">DNA Computing Made Easy</span>
-    </div>
-    <p class="hero-sub">Encode information into synthetic DNA. Generate molecular barcodes. Visualize genetic structures. </p>
-    <div class="hero-chips">
-      <div class="chip">Encoding: <b>2-bit/base</b></div>
-      <div class="chip">Alphabet: <b>A · T · G · C</b></div>
-      <div class="chip">Algorithm: <b>Hamming Distance</b></div>
-      <div class="chip">Export: <b>FASTA Format</b></div>
-    </div>
-  </div>
-  <div id="helix-wrapper" style="width: 100vw; height: 460px; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; margin-bottom: 40px; pointer-events: none;">
-    <canvas id="home-helix" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
-  </div>
-
-  <!-- Feature Cards -->
-  <div class="grid-2">
-    <div class="glass-card" style="cursor:pointer" onclick="go('storage')">
-      <div class="card-title"><div class="bar"></div>🔬 DNA Data Storage</div>
-      <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Convert any text into nucleotide sequences using binary → DNA mapping. Each ASCII character becomes a 4-base codon through 2-bit per base encoding. Includes step-by-step visual pipeline and FASTA export.</p>
-      <button class="btn btn-cyan btn-sm">Open Encoder →</button>
-    </div>
-    <div class="glass-card purple-tint" style="cursor:pointer" onclick="go('barcode')">
-      <div class="card-title purple"><div class="bar"></div>🏷 Barcoding System</div>
-      <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Generate a unique cryptographic barcode from any DNA sequence. Visualized as a graphical bar pattern with base-composition metadata, GC content, and a full 32-character hash fingerprint.</p>
-      <button class="btn btn-purple btn-sm">Open Barcode →</button>
-    </div>
-    <div class="glass-card" style="cursor:pointer" onclick="go('compare')">
-      <div class="card-title"><div class="bar"></div>⚖ Sequence Comparison</div>
-      <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Align two DNA sequences using Hamming distance analysis. Matching and mismatching bases are color-highlighted in an alignment view, with similarity percentage and mutation detection.</p>
-      <button class="btn btn-cyan btn-sm">Open Compare →</button>
-    </div>
-    <div class="glass-card purple-tint" style="cursor:pointer" onclick="go('visual')">
-      <div class="card-title purple"><div class="bar"></div>🌀 DNA Visualization</div>
-      <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Interactive strand canvas with hover-to-inspect base pairs, animated double-helix, mutation simulation, and speed control. Each base is color-coded with Watson-Crick pairing information.</p>
-      <button class="btn btn-purple btn-sm">Open Visualizer →</button>
-    </div>
-  </div>
-  <div class="grid-2" style="margin-top: 22px; margin-bottom: 22px;">
-    <div class="glass-card green-tint" style="cursor:pointer" onclick="go('files')">
-      <div class="card-title green"><div class="bar"></div>📁 File Storage</div>
-      <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Encode entire files into DNA sequences. Converts any file to binary and then to synthetic DNA bases. Download the encoded sequence as a FASTA file or upload DNA to recover your file.</p>
-      <button class="btn btn-green btn-sm">Open File Storage →</button>
-    </div>
-    <div class="glass-card purple-tint" style="cursor:pointer" onclick="go('images')">
-      <div class="card-title purple"><div class="bar"></div>🖼 Image Storage</div>
-      <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Encode images into DNA sequences. Upload an image, preview it, encode to DNA, and reconstruct the image natively from DNA text in the browser.</p>
-      <button class="btn btn-purple btn-sm">Open Image Storage →</button>
-    </div>
-  </div>
-
-  <!-- Encoding schema -->
-  <div class="glass-card">
-    <div class="card-title"><div class="bar"></div>Encoding Schema — 2-bit / Nucleotide</div>
-    <div class="schema-grid">
-      <div class="schema-cell">
-        <div class="schema-base" style="color:#00e5ff">A</div>
-        <div class="schema-bits">00</div>
-        <div class="schema-name">Adenine</div>
+      <div class="hero">
+        <div class="hero-title">
+          <span class="l1">SynthByte</span>
+        </div>
+        <div class="h1">
+          <span class="h1">DNA Computing Made Easy</span>
+        </div>
+        <p class="hero-sub">Encode information into synthetic DNA. Generate molecular barcodes. Visualize genetic
+          structures. </p>
+        <div class="hero-chips">
+          <div class="chip">Encoding: <b>2-bit/base</b></div>
+          <div class="chip">Alphabet: <b>A · T · G · C</b></div>
+          <div class="chip">Algorithm: <b>Hamming Distance</b></div>
+          <div class="chip">Export: <b>FASTA Format</b></div>
+        </div>
       </div>
-      <div class="schema-cell">
-        <div class="schema-base" style="color:#ec4899">T</div>
-        <div class="schema-bits">01</div>
-        <div class="schema-name">Thymine</div>
+      <div id="helix-wrapper"
+        style="width: 100vw; height: 460px; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; margin-bottom: 40px; pointer-events: none;">
+        <canvas id="home-helix" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
       </div>
-      <div class="schema-cell">
-        <div class="schema-base" style="color:#00ff88">G</div>
-        <div class="schema-bits">10</div>
-        <div class="schema-name">Guanine</div>
-      </div>
-      <div class="schema-cell">
-        <div class="schema-base" style="color:#f59e0b">C</div>
-        <div class="schema-bits">11</div>
-        <div class="schema-name">Cytosine</div>
-      </div>
-    </div>
-    <div class="info-msg" style="margin-top:16px">
-      Each ASCII character (8 bits) maps to exactly 4 nucleotides. A 10-character string produces a 40-base DNA strand.
-      Complementary base pairs: A↔T (2 H-bonds) and G↔C (3 H-bonds) — the same Watson-Crick rules used in real DNA.
-    </div>
-  </div>
-</section>
 
-<!-- ═══════════════════════════════════════════════════════════════ STORAGE -->
-<section id="sec-storage" class="section">
-  <div class="sec-header">
-    <div class="sec-title"><span>DNA</span> Data Storage Simulator</div>
-    <div class="sec-desc">Encode text into a synthetic DNA sequence using binary-to-nucleotide mapping. Each character is converted to its ASCII binary, then grouped into 2-bit pairs, each mapped to one of four bases.</div>
-  </div>
-
-  <div class="grid-2">
-    <!-- ENCODER -->
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Encode Text → DNA</div>
-      <label>Input text</label>
-      <textarea id="enc-in" rows="5" placeholder="Enter any text to encode into DNA...&#10;&#10;e.g.  Hello, World! 🧬"></textarea>
-      <div class="btn-row">
-        <button class="btn btn-cyan" onclick="doEncode()">Encode → DNA</button>
-        <button class="btn btn-ghost btn-sm" onclick="loadSampleText()">Sample</button>
-        <button class="btn btn-ghost btn-sm" onclick="clearEnc()">Clear</button>
+      <!-- Feature Cards -->
+      <div class="grid-2">
+        <div class="glass-card" style="cursor:pointer" onclick="go('storage')">
+          <div class="card-title">
+            <div class="bar"></div>🔬 DNA Data Storage
+          </div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Convert any text into
+            nucleotide sequences using binary → DNA mapping. Each ASCII character becomes a 4-base codon through 2-bit
+            per base encoding. Includes step-by-step visual pipeline and FASTA export.</p>
+          <button class="btn btn-cyan btn-sm">Open Encoder →</button>
+        </div>
+        <div class="glass-card purple-tint" style="cursor:pointer" onclick="go('barcode')">
+          <div class="card-title purple">
+            <div class="bar"></div>🏷 Barcoding System
+          </div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Generate a unique
+            cryptographic barcode from any DNA sequence. Visualized as a graphical bar pattern with base-composition
+            metadata, GC content, and a full 32-character hash fingerprint.</p>
+          <button class="btn btn-purple btn-sm">Open Barcode →</button>
+        </div>
+        <div class="glass-card" style="cursor:pointer" onclick="go('compare')">
+          <div class="card-title">
+            <div class="bar"></div>⚖ Sequence Comparison
+          </div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Align two DNA sequences using
+            Hamming distance analysis. Matching and mismatching bases are color-highlighted in an alignment view, with
+            similarity percentage and mutation detection.</p>
+          <button class="btn btn-cyan btn-sm">Open Compare →</button>
+        </div>
+        <div class="glass-card purple-tint" style="cursor:pointer" onclick="go('visual')">
+          <div class="card-title purple">
+            <div class="bar"></div>🌀 DNA Visualization
+          </div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Interactive strand canvas with
+            hover-to-inspect base pairs, animated double-helix, mutation simulation, and speed control. Each base is
+            color-coded with Watson-Crick pairing information.</p>
+          <button class="btn btn-purple btn-sm">Open Visualizer →</button>
+        </div>
       </div>
-      <div id="enc-err" class="error-msg"></div>
-    </div>
-
-    <!-- DECODER -->
-    <div class="glass-card purple-tint">
-      <div class="card-title purple"><div class="bar"></div>Decode DNA → Text</div>
-      <label>DNA sequence (A, T, G, C only)</label>
-      <textarea id="dec-in" rows="5" placeholder="Paste a DNA sequence to decode...&#10;&#10;e.g.  ATGCATGCATGC..."></textarea>
-      <div class="btn-row">
-        <button class="btn btn-purple" onclick="doDecode()">Decode → Text</button>
-        <button class="btn btn-ghost btn-sm" onclick="clearDec()">Clear</button>
+      <div class="grid-2" style="margin-top: 22px; margin-bottom: 22px;">
+        <div class="glass-card green-tint" style="cursor:pointer" onclick="go('files')">
+          <div class="card-title green">
+            <div class="bar"></div>📁 File Storage
+          </div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Encode entire files into DNA
+            sequences. Converts any file to binary and then to synthetic DNA bases. Download the encoded sequence as a
+            FASTA file or upload DNA to recover your file.</p>
+          <button class="btn btn-green btn-sm">Open File Storage →</button>
+        </div>
+        <div class="glass-card purple-tint" style="cursor:pointer" onclick="go('images')">
+          <div class="card-title purple">
+            <div class="bar"></div>🖼 Image Storage
+          </div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Encode images into DNA
+            sequences. Upload an image, preview it, encode to DNA, and reconstruct the image natively from DNA text in
+            the browser.</p>
+          <button class="btn btn-purple btn-sm">Open Image Storage →</button>
+        </div>
       </div>
-      <div id="dec-err" class="error-msg"></div>
-    </div>
-  </div>
 
-  <!-- ENCODE OUTPUT -->
-  <div id="enc-out" class="output-section">
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Encoding Pipeline</div>
-      <div class="step-flow">
-        <div class="step-item">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-label">Original Text <span class="badge-sm" id="enc-char-badge"></span></div>
-            <div id="enc-out-text" style="font-family:'Share Tech Mono';font-size:13px;color:var(--text);padding:10px 12px;background:rgba(0,0,0,0.35);border-radius:6px;word-break:break-all;border:1px solid var(--border2)"></div>
+      <!-- Encoding schema -->
+      <div class="glass-card">
+        <div class="card-title">
+          <div class="bar"></div>Encoding Schema — 2-bit / Nucleotide
+        </div>
+        <div class="schema-grid">
+          <div class="schema-cell">
+            <div class="schema-base" style="color:#00e5ff">A</div>
+            <div class="schema-bits">00</div>
+            <div class="schema-name">Adenine</div>
+          </div>
+          <div class="schema-cell">
+            <div class="schema-base" style="color:#ec4899">T</div>
+            <div class="schema-bits">01</div>
+            <div class="schema-name">Thymine</div>
+          </div>
+          <div class="schema-cell">
+            <div class="schema-base" style="color:#00ff88">G</div>
+            <div class="schema-bits">10</div>
+            <div class="schema-name">Guanine</div>
+          </div>
+          <div class="schema-cell">
+            <div class="schema-base" style="color:#f59e0b">C</div>
+            <div class="schema-bits">11</div>
+            <div class="schema-name">Cytosine</div>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-label">Binary Representation</div>
-            <div id="enc-out-bin" class="binary-display"></div>
+        <div class="info-msg" style="margin-top:16px">
+          Each ASCII character (8 bits) maps to exactly 4 nucleotides. A 10-character string produces a 40-base DNA
+          strand.
+          Complementary base pairs: A↔T (2 H-bonds) and G↔C (3 H-bonds) — the same Watson-Crick rules used in real DNA.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ STORAGE -->
+    <section id="sec-storage" class="section">
+      <div class="sec-header">
+        <div class="sec-title"><span>DNA</span> Data Storage Simulator</div>
+        <div class="sec-desc">Encode text into a synthetic DNA sequence using binary-to-nucleotide mapping. Each
+          character is converted to its ASCII binary, then grouped into 2-bit pairs, each mapped to one of four bases.
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- ENCODER -->
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Encode Text → DNA
+          </div>
+          <label>Input text</label>
+          <textarea id="enc-in" rows="5"
+            placeholder="Enter any text to encode into DNA...&#10;&#10;e.g.  Hello, World! 🧬"></textarea>
+          <div class="btn-row">
+            <button class="btn btn-cyan" onclick="doEncode()">Encode → DNA</button>
+            <button class="btn btn-ghost btn-sm" onclick="loadSampleText()">Sample</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearEnc()">Clear</button>
+          </div>
+          <div id="enc-err" class="error-msg"></div>
+        </div>
+
+        <!-- DECODER -->
+        <div class="glass-card purple-tint">
+          <div class="card-title purple">
+            <div class="bar"></div>Decode DNA → Text
+          </div>
+          <label>DNA sequence (A, T, G, C only)</label>
+          <textarea id="dec-in" rows="5"
+            placeholder="Paste a DNA sequence to decode...&#10;&#10;e.g.  ATGCATGCATGC..."></textarea>
+          <div class="btn-row">
+            <button class="btn btn-purple" onclick="doDecode()">Decode → Text</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearDec()">Clear</button>
+          </div>
+          <div id="dec-err" class="error-msg"></div>
+        </div>
+      </div>
+
+      <!-- ENCODE OUTPUT -->
+      <div id="enc-out" class="output-section">
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Encoding Pipeline
+          </div>
+          <div class="step-flow">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-label">Original Text <span class="badge-sm" id="enc-char-badge"></span></div>
+                <div id="enc-out-text"
+                  style="font-family:'Share Tech Mono';font-size:13px;color:var(--text);padding:10px 12px;background:rgba(0,0,0,0.35);border-radius:6px;word-break:break-all;border:1px solid var(--border2)">
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-label">Binary Representation</div>
+                <div id="enc-out-bin" class="binary-display"></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <div class="step-label">DNA Sequence <span class="badge-sm" id="enc-dna-badge"></span></div>
+                <div class="copy-wrap">
+                  <div id="enc-out-dna" class="dna-display"></div>
+                  <button class="copy-btn" id="copy-btn" onclick="copyDNA()">COPY</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Stats row -->
+          <div class="grid-3" style="gap:12px">
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--cyan)" id="s-gc">—</div>
+              <div class="stat-lab">GC Content</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--green)" id="s-len">—</div>
+              <div class="stat-lab">DNA Length</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--purple)" id="s-chars">—</div>
+              <div class="stat-lab">Characters</div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" onclick="exportFASTA()">⬇ FASTA Export</button>
+            <button class="btn btn-ghost btn-sm" onclick="sendToBarcode()">→ Send to Barcode</button>
+            <button class="btn btn-ghost btn-sm" onclick="sendToCompare(1)">→ Compare Seq 1</button>
+            <button class="btn btn-ghost btn-sm" onclick="sendToVis()">→ Visualize</button>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-label">DNA Sequence <span class="badge-sm" id="enc-dna-badge"></span></div>
-            <div class="copy-wrap">
-              <div id="enc-out-dna" class="dna-display"></div>
-              <button class="copy-btn" id="copy-btn" onclick="copyDNA()">COPY</button>
+      </div>
+
+      <!-- DECODE OUTPUT -->
+      <div id="dec-out" class="output-section">
+        <div class="glass-card green-tint">
+          <div class="card-title green">
+            <div class="bar"></div>Decoded Result
+          </div>
+          <div class="step-flow">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <div class="step-label">Binary Intermediate</div>
+                <div id="dec-out-bin" class="binary-display"></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <div class="step-label">Decoded Text</div>
+                <div id="dec-out-text"
+                  style="font-family:'Share Tech Mono';font-size:14px;color:var(--green);padding:14px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:8px;word-break:break-all;min-height:40px">
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <div class="divider"></div>
+    <!-- ═══════════════════════════════════════════════════════════════ FILES -->
+    <section id="sec-files" class="section">
+      <div class="sec-header">
+        <div class="sec-title"><span>File</span> DNA Encoding</div>
+        <div class="sec-desc">Encode any file to a DNA sequence and decode a DNA text file back into the original file.
+          All processing is done locally in your browser.</div>
+      </div>
 
-      <!-- Stats row -->
-      <div class="grid-3" style="gap:12px">
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--cyan)" id="s-gc">—</div>
-          <div class="stat-lab">GC Content</div>
+      <div class="grid-2">
+        <!-- ENCODER -->
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Encode File → DNA
+          </div>
+          <label>Select a file to encode</label>
+          <input type="file" id="file-enc-in" style="width:100%;margin-bottom:15px;color:var(--text)" />
+          <div class="btn-row">
+            <button class="btn btn-cyan" onclick="encodeFile()">Encode File →</button>
+            <button class="btn btn-ghost btn-sm"
+              onclick="document.getElementById('file-enc-in').value=''">Clear</button>
+          </div>
+          <div id="file-enc-err" class="error-msg"></div>
         </div>
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--green)" id="s-len">—</div>
-          <div class="stat-lab">DNA Length</div>
-        </div>
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--purple)" id="s-chars">—</div>
-          <div class="stat-lab">Characters</div>
+
+        <!-- DECODER -->
+        <div class="glass-card purple-tint">
+          <div class="card-title purple">
+            <div class="bar"></div>Decode DNA → File
+          </div>
+          <label>Upload DNA text file (.txt or .fasta)</label>
+          <input type="file" id="file-dec-in" accept=".txt,.fasta"
+            style="width:100%;margin-bottom:15px;color:var(--text)" />
+          <div class="btn-row">
+            <button class="btn btn-purple" onclick="decodeFile()">Decode File →</button>
+            <button class="btn btn-ghost btn-sm"
+              onclick="document.getElementById('file-dec-in').value=''">Clear</button>
+          </div>
+          <div id="file-dec-err" class="error-msg"></div>
         </div>
       </div>
 
-      <div class="btn-row">
-        <button class="btn btn-ghost btn-sm" onclick="exportFASTA()">⬇ FASTA Export</button>
-        <button class="btn btn-ghost btn-sm" onclick="sendToBarcode()">→ Send to Barcode</button>
-        <button class="btn btn-ghost btn-sm" onclick="sendToCompare(1)">→ Compare Seq 1</button>
-        <button class="btn btn-ghost btn-sm" onclick="sendToVis()">→ Visualize</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DECODE OUTPUT -->
-  <div id="dec-out" class="output-section">
-    <div class="glass-card green-tint">
-      <div class="card-title green"><div class="bar"></div>Decoded Result</div>
-      <div class="step-flow">
-        <div class="step-item">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-label">Binary Intermediate</div>
-            <div id="dec-out-bin" class="binary-display"></div>
+      <div id="file-enc-out" class="output-section">
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Encoded DNA Details
+          </div>
+          <div class="grid-3" style="gap:12px;margin-bottom:16px;">
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--cyan)" id="f-s-len">—</div>
+              <div class="stat-lab">DNA Length</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--green)" id="f-s-size">—</div>
+              <div class="stat-lab">Orig Size</div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" onclick="exportFileDNA()">⬇ Download DNA</button>
           </div>
         </div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-label">Decoded Text</div>
-            <div id="dec-out-text" style="font-family:'Share Tech Mono';font-size:14px;color:var(--green);padding:14px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:8px;word-break:break-all;min-height:40px"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ IMAGES -->
+    <section id="sec-images" class="section">
+      <div class="sec-header">
+        <div class="sec-title"><span>Image</span> DNA Encoding</div>
+        <div class="sec-desc">Encode images into DNA sequences. Decode DNA back into image visualization.</div>
+      </div>
+
+      <div class="grid-2">
+        <!-- ENCODER -->
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Encode Image → DNA
+          </div>
+          <label>Select an image to encode</label>
+          <input type="file" id="img-enc-in" accept="image/*" style="width:100%;margin-bottom:15px;color:var(--text)"
+            onchange="previewImageEnc(this)" />
+          <div
+            style="text-align:center;margin-bottom:15px;display:none;background:rgba(0,0,0,0.5);border:1px solid var(--border2);border-radius:8px;padding:10px;"
+            id="img-enc-preview-box">
+            <img id="img-enc-preview" style="max-width:100%;max-height:150px;border-radius:4px" />
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-cyan" onclick="encodeImage()">Encode Image →</button>
+            <button class="btn btn-ghost btn-sm"
+              onclick="document.getElementById('img-enc-in').value='';document.getElementById('img-enc-preview-box').style.display='none'">Clear</button>
+          </div>
+          <div id="img-enc-err" class="error-msg"></div>
+        </div>
+
+        <!-- DECODER -->
+        <div class="glass-card green-tint">
+          <div class="card-title green">
+            <div class="bar"></div>Decode DNA → Image
+          </div>
+          <label>Upload DNA text file (.txt or .fasta)</label>
+          <input type="file" id="img-dec-in" accept=".txt,.fasta"
+            style="width:100%;margin-bottom:15px;color:var(--text)" />
+          <div class="btn-row">
+            <button class="btn btn-green" onclick="decodeImage()">Decode Image →</button>
+            <button class="btn btn-ghost btn-sm"
+              onclick="document.getElementById('img-dec-in').value='';hide('img-dec-out')">Clear</button>
+          </div>
+          <div id="img-dec-err" class="error-msg"></div>
+        </div>
+      </div>
+
+      <div id="img-enc-out" class="output-section">
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Encoded DNA Information
+          </div>
+          <div class="grid-3" style="gap:12px;margin-bottom:16px;">
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--cyan)" id="i-s-len">—</div>
+              <div class="stat-lab">DNA Length</div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" onclick="exportImageDNA()">⬇ Download DNA</button>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
 
-<!-- ═══════════════════════════════════════════════════════════════ FILES -->
-<section id="sec-files" class="section">
-  <div class="sec-header">
-    <div class="sec-title"><span>File</span> DNA Encoding</div>
-    <div class="sec-desc">Encode any file to a DNA sequence and decode a DNA text file back into the original file. All processing is done locally in your browser.</div>
-  </div>
-
-  <div class="grid-2">
-    <!-- ENCODER -->
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Encode File → DNA</div>
-      <label>Select a file to encode</label>
-      <input type="file" id="file-enc-in" style="width:100%;margin-bottom:15px;color:var(--text)" />
-      <div class="btn-row">
-        <button class="btn btn-cyan" onclick="encodeFile()">Encode File →</button>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('file-enc-in').value=''">Clear</button>
-      </div>
-      <div id="file-enc-err" class="error-msg"></div>
-    </div>
-
-    <!-- DECODER -->
-    <div class="glass-card purple-tint">
-      <div class="card-title purple"><div class="bar"></div>Decode DNA → File</div>
-      <label>Upload DNA text file (.txt or .fasta)</label>
-      <input type="file" id="file-dec-in" accept=".txt,.fasta" style="width:100%;margin-bottom:15px;color:var(--text)" />
-      <div class="btn-row">
-        <button class="btn btn-purple" onclick="decodeFile()">Decode File →</button>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('file-dec-in').value=''">Clear</button>
-      </div>
-      <div id="file-dec-err" class="error-msg"></div>
-    </div>
-  </div>
-  
-  <div id="file-enc-out" class="output-section">
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Encoded DNA Details</div>
-      <div class="grid-3" style="gap:12px;margin-bottom:16px;">
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--cyan)" id="f-s-len">—</div>
-          <div class="stat-lab">DNA Length</div>
-        </div>
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--green)" id="f-s-size">—</div>
-          <div class="stat-lab">Orig Size</div>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-ghost btn-sm" onclick="exportFileDNA()">⬇ Download DNA</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ IMAGES -->
-<section id="sec-images" class="section">
-  <div class="sec-header">
-    <div class="sec-title"><span>Image</span> DNA Encoding</div>
-    <div class="sec-desc">Encode images into DNA sequences. Decode DNA back into image visualization.</div>
-  </div>
-
-  <div class="grid-2">
-    <!-- ENCODER -->
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Encode Image → DNA</div>
-      <label>Select an image to encode</label>
-      <input type="file" id="img-enc-in" accept="image/*" style="width:100%;margin-bottom:15px;color:var(--text)" onchange="previewImageEnc(this)" />
-      <div style="text-align:center;margin-bottom:15px;display:none;background:rgba(0,0,0,0.5);border:1px solid var(--border2);border-radius:8px;padding:10px;" id="img-enc-preview-box">
-        <img id="img-enc-preview" style="max-width:100%;max-height:150px;border-radius:4px" />
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-cyan" onclick="encodeImage()">Encode Image →</button>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('img-enc-in').value='';document.getElementById('img-enc-preview-box').style.display='none'">Clear</button>
-      </div>
-      <div id="img-enc-err" class="error-msg"></div>
-    </div>
-
-    <!-- DECODER -->
-    <div class="glass-card green-tint">
-      <div class="card-title green"><div class="bar"></div>Decode DNA → Image</div>
-      <label>Upload DNA text file (.txt or .fasta)</label>
-      <input type="file" id="img-dec-in" accept=".txt,.fasta" style="width:100%;margin-bottom:15px;color:var(--text)" />
-      <div class="btn-row">
-        <button class="btn btn-green" onclick="decodeImage()">Decode Image →</button>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('img-dec-in').value='';hide('img-dec-out')">Clear</button>
-      </div>
-      <div id="img-dec-err" class="error-msg"></div>
-    </div>
-  </div>
-
-  <div id="img-enc-out" class="output-section">
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Encoded DNA Information</div>
-      <div class="grid-3" style="gap:12px;margin-bottom:16px;">
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--cyan)" id="i-s-len">—</div>
-          <div class="stat-lab">DNA Length</div>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-ghost btn-sm" onclick="exportImageDNA()">⬇ Download DNA</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="img-dec-out" class="output-section">
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Decoded Image</div>
-      <div style="text-align:center;background:rgba(0,0,0,0.5);border:1px solid var(--border2);border-radius:8px;padding:10px;">
-        <img id="img-dec-preview" style="max-width:100%;max-height:300px;border-radius:4px" />
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ BARCODE -->
-<section id="sec-barcode" class="section">
-  <div class="sec-header">
-    <div class="sec-title"><span>DNA</span> Barcoding System</div>
-    <div class="sec-desc">Generate a unique deterministic fingerprint from any DNA sequence. The barcode is derived from a 32-character hash, visualized as a variable-height bar pattern — similar to how real species barcodes work.</div>
-  </div>
-
-  <div class="glass-card">
-    <div class="card-title"><div class="bar"></div>Sequence Input</div>
-    <label>DNA sequence (A, T, G, C)</label>
-    <input type="text" id="bc-in" placeholder="Enter or paste a DNA sequence...  e.g. ATGCTAGCATGCGCTAGC"/>
-    <div class="btn-row">
-      <button class="btn btn-cyan" onclick="doBarcode()">Generate Barcode</button>
-      <button class="btn btn-ghost btn-sm" onclick="loadSampleBarcode()">Sample</button>
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bc-in').value=''">Clear</button>
-    </div>
-    <div id="bc-err" class="error-msg"></div>
-  </div>
-
-  <div id="bc-out" class="output-section">
-    <!-- Barcode graphic -->
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Visual Barcode</div>
-      <div class="barcode-wrap">
-        <div class="barcode-id" id="bc-id">—</div>
-        <canvas id="bc-canvas" width="560" height="90" style="max-width:100%;border-radius:4px;cursor:default"></canvas>
-        <div style="font-family:'Share Tech Mono';font-size:9px;color:#1a3a5a;margin-top:10px;letter-spacing:2px" id="bc-hash-seg">—</div>
-      </div>
-    </div>
-
-    <!-- Metadata grid -->
-    <div class="grid-2">
-      <div class="glass-card">
-        <div class="card-title"><div class="bar"></div>Hash Fingerprint</div>
-        <div style="font-family:'Share Tech Mono';font-size:12px;color:var(--teal);word-break:break-all;padding:14px;background:rgba(0,0,0,0.4);border-radius:8px;border:1px solid var(--border2);letter-spacing:1px;line-height:1.8" id="bc-hash">—</div>
-        <div class="divider"></div>
-        <div class="grid-2" style="gap:12px">
-          <div class="stat-block">
-            <div class="stat-val" style="color:var(--cyan);font-size:20px" id="bc-len">—</div>
-            <div class="stat-lab">Sequence Length</div>
+      <div id="img-dec-out" class="output-section">
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Decoded Image
           </div>
-          <div class="stat-block">
-            <div class="stat-val" style="color:var(--green);font-size:20px" id="bc-gc">—</div>
-            <div class="stat-lab">GC Content</div>
+          <div
+            style="text-align:center;background:rgba(0,0,0,0.5);border:1px solid var(--border2);border-radius:8px;padding:10px;">
+            <img id="img-dec-preview" style="max-width:100%;max-height:300px;border-radius:4px" />
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ BARCODE -->
+    <section id="sec-barcode" class="section">
+      <div class="sec-header">
+        <div class="sec-title"><span>DNA</span> Barcoding System</div>
+        <div class="sec-desc">Generate a unique deterministic fingerprint from any DNA sequence. The barcode is derived
+          from a 32-character hash, visualized as a variable-height bar pattern — similar to how real species barcodes
+          work.</div>
       </div>
 
       <div class="glass-card">
-        <div class="card-title"><div class="bar"></div>Base Composition</div>
-        <div id="bc-comp">—</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════════════════ COMPARE -->
-<section id="sec-compare" class="section">
-  <div class="sec-header">
-    <div class="sec-title">Sequence <span>Comparison</span></div>
-    <div class="sec-desc">Align two DNA sequences with Hamming distance analysis. Every position is compared and color-coded: green for matches, pink for substitutions, gray for gaps.</div>
-  </div>
-
-  <div class="grid-2">
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Sequence A</div>
-      <label>DNA (A, T, G, C)</label>
-      <textarea id="cmp1" rows="4" placeholder="ATGCTAGCATGC..."></textarea>
-      <div class="btn-row">
-        <button class="btn btn-ghost btn-xs" onclick="loadSampleCmp(1)">Sample</button>
-        <button class="btn btn-ghost btn-xs" onclick="mutateEl('cmp1')">⚡ Mutate</button>
-        <button class="btn btn-ghost btn-xs" onclick="randomizeEl('cmp1')">↺ Random</button>
-      </div>
-    </div>
-    <div class="glass-card purple-tint">
-      <div class="card-title purple"><div class="bar"></div>Sequence B</div>
-      <label>DNA (A, T, G, C)</label>
-      <textarea id="cmp2" rows="4" placeholder="ATGCTAGCATGC..."></textarea>
-      <div class="btn-row">
-        <button class="btn btn-ghost btn-xs" onclick="loadSampleCmp(2)">Sample</button>
-        <button class="btn btn-ghost btn-xs" onclick="mutateEl('cmp2')">⚡ Mutate</button>
-        <button class="btn btn-ghost btn-xs" onclick="randomizeEl('cmp2')">↺ Random</button>
-      </div>
-    </div>
-  </div>
-
-  <div style="display:flex;gap:10px;justify-content:center;margin:4px 0 20px;flex-wrap:wrap">
-    <button class="btn btn-cyan" onclick="doCompare()">⚖ Compare Sequences</button>
-    <button class="btn btn-ghost btn-sm" onclick="swapCmp()">⇄ Swap</button>
-    <button class="btn btn-ghost btn-sm" onclick="clearCmp()">Clear</button>
-  </div>
-  <div id="cmp-err" class="error-msg" style="display:none;margin-bottom:12px"></div>
-
-  <div id="cmp-out" class="output-section">
-    <div class="glass-card">
-      <div class="card-title"><div class="bar"></div>Similarity Analysis</div>
-      <div style="display:flex;gap:36px;align-items:center;flex-wrap:wrap;margin-bottom:22px">
-        <div>
-          <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">Similarity</div>
-          <div style="font-family:'Orbitron';font-size:40px;font-weight:900" id="sim-pct">—</div>
+        <div class="card-title">
+          <div class="bar"></div>Sequence Input
         </div>
-        <div style="flex:1;min-width:200px">
-          <div class="sim-track"><div class="sim-fill" id="sim-fill" style="width:0"></div></div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px">
-            <span id="sim-m">—</span>
-            <span id="sim-mm">—</span>
+        <label>DNA sequence (A, T, G, C)</label>
+        <input type="text" id="bc-in" placeholder="Enter or paste a DNA sequence...  e.g. ATGCTAGCATGCGCTAGC" />
+        <div class="btn-row">
+          <button class="btn btn-cyan" onclick="doBarcode()">Generate Barcode</button>
+          <button class="btn btn-ghost btn-sm" onclick="loadSampleBarcode()">Sample</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bc-in').value=''">Clear</button>
+        </div>
+        <div id="bc-err" class="error-msg"></div>
+      </div>
+
+      <div id="bc-out" class="output-section">
+        <!-- Barcode graphic -->
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Visual Barcode
+          </div>
+          <div class="barcode-wrap">
+            <div class="barcode-id" id="bc-id">—</div>
+            <canvas id="bc-canvas" width="560" height="90"
+              style="max-width:100%;border-radius:4px;cursor:default"></canvas>
+            <div style="font-family:'Share Tech Mono';font-size:9px;color:#1a3a5a;margin-top:10px;letter-spacing:2px"
+              id="bc-hash-seg">—</div>
+          </div>
+        </div>
+
+        <!-- Metadata grid -->
+        <div class="grid-2">
+          <div class="glass-card">
+            <div class="card-title">
+              <div class="bar"></div>Hash Fingerprint
+            </div>
+            <div
+              style="font-family:'Share Tech Mono';font-size:12px;color:var(--teal);word-break:break-all;padding:14px;background:rgba(0,0,0,0.4);border-radius:8px;border:1px solid var(--border2);letter-spacing:1px;line-height:1.8"
+              id="bc-hash">—</div>
+            <div class="divider"></div>
+            <div class="grid-2" style="gap:12px">
+              <div class="stat-block">
+                <div class="stat-val" style="color:var(--cyan);font-size:20px" id="bc-len">—</div>
+                <div class="stat-lab">Sequence Length</div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-val" style="color:var(--green);font-size:20px" id="bc-gc">—</div>
+                <div class="stat-lab">GC Content</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <div class="bar"></div>Base Composition
+            </div>
+            <div id="bc-comp">—</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ COMPARE -->
+    <section id="sec-compare" class="section">
+      <div class="sec-header">
+        <div class="sec-title">Sequence <span>Comparison</span></div>
+        <div class="sec-desc">Align two DNA sequences with Hamming distance analysis. Every position is compared and
+          color-coded: green for matches, pink for substitutions, gray for gaps.</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Sequence A
+          </div>
+          <label>DNA (A, T, G, C)</label>
+          <textarea id="cmp1" rows="4" placeholder="ATGCTAGCATGC..."></textarea>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-xs" onclick="loadSampleCmp(1)">Sample</button>
+            <button class="btn btn-ghost btn-xs" onclick="mutateEl('cmp1')">⚡ Mutate</button>
+            <button class="btn btn-ghost btn-xs" onclick="randomizeEl('cmp1')">↺ Random</button>
+          </div>
+        </div>
+        <div class="glass-card purple-tint">
+          <div class="card-title purple">
+            <div class="bar"></div>Sequence B
+          </div>
+          <label>DNA (A, T, G, C)</label>
+          <textarea id="cmp2" rows="4" placeholder="ATGCTAGCATGC..."></textarea>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-xs" onclick="loadSampleCmp(2)">Sample</button>
+            <button class="btn btn-ghost btn-xs" onclick="mutateEl('cmp2')">⚡ Mutate</button>
+            <button class="btn btn-ghost btn-xs" onclick="randomizeEl('cmp2')">↺ Random</button>
           </div>
         </div>
       </div>
 
-      <div class="grid-4" style="gap:12px;margin-bottom:22px">
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--cyan);font-size:18px" id="c-l1">—</div>
-          <div class="stat-lab">Seq A length</div>
+      <div style="display:flex;gap:10px;justify-content:center;margin:4px 0 20px;flex-wrap:wrap">
+        <button class="btn btn-cyan" onclick="doCompare()">⚖ Compare Sequences</button>
+        <button class="btn btn-ghost btn-sm" onclick="swapCmp()">⇄ Swap</button>
+        <button class="btn btn-ghost btn-sm" onclick="clearCmp()">Clear</button>
+      </div>
+      <div id="cmp-err" class="error-msg" style="display:none;margin-bottom:12px"></div>
+
+      <div id="cmp-out" class="output-section">
+        <div class="glass-card">
+          <div class="card-title">
+            <div class="bar"></div>Similarity Analysis
+          </div>
+          <div style="display:flex;gap:36px;align-items:center;flex-wrap:wrap;margin-bottom:22px">
+            <div>
+              <div
+                style="font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">
+                Similarity</div>
+              <div style="font-family:'Orbitron';font-size:40px;font-weight:900" id="sim-pct">—</div>
+            </div>
+            <div style="flex:1;min-width:200px">
+              <div class="sim-track">
+                <div class="sim-fill" id="sim-fill" style="width:0"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px">
+                <span id="sim-m">—</span>
+                <span id="sim-mm">—</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-4" style="gap:12px;margin-bottom:22px">
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--cyan);font-size:18px" id="c-l1">—</div>
+              <div class="stat-lab">Seq A length</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--purple);font-size:18px" id="c-l2">—</div>
+              <div class="stat-lab">Seq B length</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--green);font-size:18px" id="c-gc1">—</div>
+              <div class="stat-lab">GC% A</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-val" style="color:var(--pink);font-size:18px" id="c-gc2">—</div>
+              <div class="stat-lab">GC% B</div>
+            </div>
+          </div>
+
+          <div class="card-title" style="margin-bottom:10px">
+            <div class="bar"></div>Alignment View
+          </div>
+          <div style="display:flex;gap:12px;margin-bottom:8px;font-size:11px;color:var(--muted);flex-wrap:wrap">
+            <span style="display:flex;align-items:center;gap:5px"><span
+                style="width:10px;height:10px;border-radius:2px;background:rgba(0,255,136,0.25);display:inline-block"></span>Match</span>
+            <span style="display:flex;align-items:center;gap:5px"><span
+                style="width:10px;height:10px;border-radius:2px;background:rgba(236,72,153,0.25);display:inline-block"></span>Mismatch</span>
+            <span style="display:flex;align-items:center;gap:5px"><span
+                style="width:10px;height:10px;border-radius:2px;background:rgba(90,100,120,0.3);display:inline-block"></span>Gap</span>
+          </div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">SEQUENCE A</div>
+          <div id="align1" class="align-row"></div>
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin:8px 0 4px">SEQUENCE B</div>
+          <div id="align2" class="align-row"></div>
         </div>
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--purple);font-size:18px" id="c-l2">—</div>
-          <div class="stat-lab">Seq B length</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ VISUAL -->
+    <section id="sec-visual" class="section">
+      <div class="sec-header">
+        <div class="sec-title">DNA <span>Visualization</span></div>
+        <div class="sec-desc">Interactive strand explorer. Hover over any base on the canvas to inspect its identity,
+          complement, and hydrogen bonding. Simulate mutations to watch the sequence change in real time.</div>
+      </div>
+
+      <div class="glass-card">
+        <div class="card-title">
+          <div class="bar"></div>Controls
         </div>
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--green);font-size:18px" id="c-gc1">—</div>
-          <div class="stat-lab">GC% A</div>
+        <div class="vis-controls">
+          <button class="btn btn-cyan btn-sm" onclick="randomStrand()">↺ Random</button>
+          <button class="btn btn-ghost btn-sm" onclick="mutateStrand()">⚡ Mutate</button>
+          <button class="btn btn-purple btn-sm" id="anim-toggle" onclick="toggleAnim()">⏸ Pause</button>
+          <div class="slider-wrap">
+            <label>Speed</label>
+            <input type="range" id="spd" min="0.2" max="3" step="0.1" value="1" oninput="setSpd(this.value)" />
+            <span id="spd-val"
+              style="font-family:'Share Tech Mono';font-size:11px;color:var(--cyan);min-width:28px">1.0x</span>
+          </div>
         </div>
-        <div class="stat-block">
-          <div class="stat-val" style="color:var(--pink);font-size:18px" id="c-gc2">—</div>
-          <div class="stat-lab">GC% B</div>
+
+        <div class="base-legend">
+          <div class="base-pill">
+            <div class="base-dot" style="background:#00e5ff"></div><span style="color:#00e5ff">A</span>&nbsp;Adenine ·
+            pairs with T
+          </div>
+          <div class="base-pill">
+            <div class="base-dot" style="background:#ec4899"></div><span style="color:#ec4899">T</span>&nbsp;Thymine ·
+            pairs with A
+          </div>
+          <div class="base-pill">
+            <div class="base-dot" style="background:#00ff88"></div><span style="color:#00ff88">G</span>&nbsp;Guanine ·
+            pairs with C
+          </div>
+          <div class="base-pill">
+            <div class="base-dot" style="background:#f59e0b"></div><span style="color:#f59e0b">C</span>&nbsp;Cytosine ·
+            pairs with G
+          </div>
         </div>
       </div>
 
-      <div class="card-title" style="margin-bottom:10px"><div class="bar"></div>Alignment View</div>
-      <div style="display:flex;gap:12px;margin-bottom:8px;font-size:11px;color:var(--muted);flex-wrap:wrap">
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(0,255,136,0.25);display:inline-block"></span>Match</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(236,72,153,0.25);display:inline-block"></span>Mismatch</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:rgba(90,100,120,0.3);display:inline-block"></span>Gap</span>
+      <div class="glass-card">
+        <div class="card-title">
+          <div class="bar"></div>Live Double Strand
+        </div>
+        <canvas id="strand-cv" style="width:100%;border-radius:8px;max-height:220px"></canvas>
+        <div class="base-info" id="base-info">Hover over a base to see pairing information</div>
       </div>
-      <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">SEQUENCE A</div>
-      <div id="align1" class="align-row"></div>
-      <div style="font-size:10px;color:var(--muted);letter-spacing:1px;margin:8px 0 4px">SEQUENCE B</div>
-      <div id="align2" class="align-row"></div>
-    </div>
-  </div>
-</section>
 
-<!-- ═══════════════════════════════════════════════════════════════ VISUAL -->
-<section id="sec-visual" class="section">
-  <div class="sec-header">
-    <div class="sec-title">DNA <span>Visualization</span></div>
-    <div class="sec-desc">Interactive strand explorer. Hover over any base on the canvas to inspect its identity, complement, and hydrogen bonding. Simulate mutations to watch the sequence change in real time.</div>
-  </div>
-
-  <div class="glass-card">
-    <div class="card-title"><div class="bar"></div>Controls</div>
-    <div class="vis-controls">
-      <button class="btn btn-cyan btn-sm" onclick="randomStrand()">↺ Random</button>
-      <button class="btn btn-ghost btn-sm" onclick="mutateStrand()">⚡ Mutate</button>
-      <button class="btn btn-purple btn-sm" id="anim-toggle" onclick="toggleAnim()">⏸ Pause</button>
-      <div class="slider-wrap">
-        <label>Speed</label>
-        <input type="range" id="spd" min="0.2" max="3" step="0.1" value="1" oninput="setSpd(this.value)"/>
-        <span id="spd-val" style="font-family:'Share Tech Mono';font-size:11px;color:var(--cyan);min-width:28px">1.0x</span>
+      <div class="glass-card">
+        <div class="card-title">
+          <div class="bar"></div>Sequence Data
+        </div>
+        <div id="vis-seq" class="dna-display" style="max-height:90px"></div>
+        <div style="display:flex;gap:24px;margin-top:14px;flex-wrap:wrap">
+          <div><span
+              style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Length&nbsp;</span><span
+              id="v-len" style="font-family:'Share Tech Mono';color:var(--cyan);font-size:14px"></span></div>
+          <div><span
+              style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">GC%&nbsp;</span><span
+              id="v-gc" style="font-family:'Share Tech Mono';color:var(--green);font-size:14px"></span></div>
+          <div><span
+              style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Mutations&nbsp;</span><span
+              id="v-mut" style="font-family:'Share Tech Mono';color:var(--pink);font-size:14px">0</span></div>
+        </div>
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn btn-ghost btn-sm" onclick="sendVisToBc()">→ Send to Barcode</button>
+          <button class="btn btn-ghost btn-sm" onclick="sendVisToCmp()">→ Send to Compare</button>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="base-legend">
-      <div class="base-pill"><div class="base-dot" style="background:#00e5ff"></div><span style="color:#00e5ff">A</span>&nbsp;Adenine · pairs with T</div>
-      <div class="base-pill"><div class="base-dot" style="background:#ec4899"></div><span style="color:#ec4899">T</span>&nbsp;Thymine · pairs with A</div>
-      <div class="base-pill"><div class="base-dot" style="background:#00ff88"></div><span style="color:#00ff88">G</span>&nbsp;Guanine · pairs with C</div>
-      <div class="base-pill"><div class="base-dot" style="background:#f59e0b"></div><span style="color:#f59e0b">C</span>&nbsp;Cytosine · pairs with G</div>
-    </div>
-  </div>
+  </main>
 
-  <div class="glass-card">
-    <div class="card-title"><div class="bar"></div>Live Double Strand</div>
-    <canvas id="strand-cv" style="width:100%;border-radius:8px;max-height:220px"></canvas>
-    <div class="base-info" id="base-info">Hover over a base to see pairing information</div>
-  </div>
+  <!-- ═══════════════════════════════════════════════════════════════ JS ENGINE -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    'use strict';
 
-  <div class="glass-card">
-    <div class="card-title"><div class="bar"></div>Sequence Data</div>
-    <div id="vis-seq" class="dna-display" style="max-height:90px"></div>
-    <div style="display:flex;gap:24px;margin-top:14px;flex-wrap:wrap">
-      <div><span style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Length&nbsp;</span><span id="v-len" style="font-family:'Share Tech Mono';color:var(--cyan);font-size:14px"></span></div>
-      <div><span style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">GC%&nbsp;</span><span id="v-gc" style="font-family:'Share Tech Mono';color:var(--green);font-size:14px"></span></div>
-      <div><span style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Mutations&nbsp;</span><span id="v-mut" style="font-family:'Share Tech Mono';color:var(--pink);font-size:14px">0</span></div>
-    </div>
-    <div class="btn-row" style="margin-top:14px">
-      <button class="btn btn-ghost btn-sm" onclick="sendVisToBc()">→ Send to Barcode</button>
-      <button class="btn btn-ghost btn-sm" onclick="sendVisToCmp()">→ Send to Compare</button>
-    </div>
-  </div>
-</section>
+    /* ── ENCODING CONSTANTS ─────────────────────────────────────────────────── */
+    const B2D = { '00': 'A', '01': 'T', '10': 'G', '11': 'C' };
+    const D2B = { 'A': '00', 'T': '01', 'G': '10', 'C': '11' };
+    const BASE_COLS = { A: '#00e5ff', T: '#ec4899', G: '#00ff88', C: '#f59e0b' };
+    const BASE_NAME = { A: 'Adenine', T: 'Thymine', G: 'Guanine', C: 'Cytosine' };
+    const COMP = { A: 'T', T: 'A', G: 'C', C: 'G' };
+    const BONDS = { A: '2 hydrogen bonds (A–T)', T: '2 hydrogen bonds (T–A)', G: '3 hydrogen bonds (G–C)', C: '3 hydrogen bonds (C–G)' };
+    const BASES = 'ATGC';
 
-</main>
+    /* ── CORE ALGORITHMS ─────────────────────────────────────────────────────── */
+    function t2b(t) { return t.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('') }
+    function b2d(b) { const p = b.padEnd(Math.ceil(b.length / 2) * 2, '0'); let d = ''; for (let i = 0; i < p.length; i += 2)d += B2D[p.slice(i, i + 2)]; return d }
+    function d2b(d) { return d.toUpperCase().split('').map(c => D2B[c] || '').join('') }
+    function b2t(b) { let t = ''; for (let i = 0; i < b.length; i += 8) { const byte = b.slice(i, i + 8); if (byte.length === 8) { const c = parseInt(byte, 2); if (c > 0) t += String.fromCharCode(c) } } return t }
+    function validDNA(s) { return /^[ATGCatgc]+$/.test(s) }
+    function gcPct(d) { const u = d.toUpperCase(), n = (u.match(/[GC]/g) || []).length; return ((n / u.length) * 100).toFixed(1) }
+    function rnd(len = 50) { let s = ''; for (let i = 0; i < len; i++)s += BASES[Math.floor(Math.random() * 4)]; return s }
 
-<!-- ═══════════════════════════════════════════════════════════════ JS ENGINE -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-'use strict';
+    const U8_TO_BIN = new Array(256);
+    for (let i = 0; i < 256; i++) U8_TO_BIN[i] = i.toString(2).padStart(8, '0');
 
-/* ── ENCODING CONSTANTS ─────────────────────────────────────────────────── */
-const B2D={'00':'A','01':'T','10':'G','11':'C'};
-const D2B={'A':'00','T':'01','G':'10','C':'11'};
-const BASE_COLS={A:'#00e5ff',T:'#ec4899',G:'#00ff88',C:'#f59e0b'};
-const BASE_NAME={A:'Adenine',T:'Thymine',G:'Guanine',C:'Cytosine'};
-const COMP={A:'T',T:'A',G:'C',C:'G'};
-const BONDS={A:'2 hydrogen bonds (A–T)',T:'2 hydrogen bonds (T–A)',G:'3 hydrogen bonds (G–C)',C:'3 hydrogen bonds (C–G)'};
-const BASES='ATGC';
-
-/* ── CORE ALGORITHMS ─────────────────────────────────────────────────────── */
-function t2b(t){return t.split('').map(c=>c.charCodeAt(0).toString(2).padStart(8,'0')).join('')}
-function b2d(b){const p=b.padEnd(Math.ceil(b.length/2)*2,'0');let d='';for(let i=0;i<p.length;i+=2)d+=B2D[p.slice(i,i+2)];return d}
-function d2b(d){return d.toUpperCase().split('').map(c=>D2B[c]||'').join('')}
-function b2t(b){let t='';for(let i=0;i<b.length;i+=8){const byte=b.slice(i,i+8);if(byte.length===8){const c=parseInt(byte,2);if(c>0)t+=String.fromCharCode(c)}}return t}
-function validDNA(s){return/^[ATGCatgc]+$/.test(s)}
-function gcPct(d){const u=d.toUpperCase(),n=(u.match(/[GC]/g)||[]).length;return((n/u.length)*100).toFixed(1)}
-function rnd(len=50){let s='';for(let i=0;i<len;i++)s+=BASES[Math.floor(Math.random()*4)];return s}
-
-const U8_TO_BIN = new Array(256);
-for(let i=0; i<256; i++) U8_TO_BIN[i] = i.toString(2).padStart(8,'0');
-
-function u8ToBinStr(u8){
-  const chunks = [];
-  for(let i=0; i<u8.length; i+=1024) {
-    let s = '';
-    const end = Math.min(i+1024, u8.length);
-    for(let j=i; j<end; j++){
-      s += U8_TO_BIN[u8[j]];
+    function u8ToBinStr(u8) {
+      const chunks = [];
+      for (let i = 0; i < u8.length; i += 1024) {
+        let s = '';
+        const end = Math.min(i + 1024, u8.length);
+        for (let j = i; j < end; j++) {
+          s += U8_TO_BIN[u8[j]];
+        }
+        chunks.push(s);
+      }
+      return chunks.join('');
     }
-    chunks.push(s);
-  }
-  return chunks.join('');
-}
 
-function binStrToU8(bin){
-  const len = Math.floor(bin.length / 8);
-  const u8 = new Uint8Array(len);
-  for(let i=0; i<len; i++){
-    u8[i] = parseInt(bin.slice(i*8, i*8+8), 2);
-  }
-  return u8;
-}
-
-/* FNV-1a inspired 128-bit deterministic hash */
-function hashSeq(s){
-  let h=2166136261>>>0,hex='';
-  for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}
-  hex=h.toString(16).padStart(8,'0');
-  for(let r=1;r<4;r++){
-    let h2=2166136261>>>0;
-    for(let i=0;i<s.length;i++){h2^=s.charCodeAt((i*7+r*13)%s.length);h2=Math.imul(h2,16777619)>>>0;h2=(h2^r*1234567)>>>0}
-    hex+=h2.toString(16).padStart(8,'0');
-  }
-  return hex.toUpperCase();
-}
-
-/* ── UI HELPERS ──────────────────────────────────────────────────────────── */
-function $(id){return document.getElementById(id)}
-function show(id){$(id).classList.add('show')}
-function hide(id){$(id).classList.remove('show')}
-function err(id,msg){const e=$(id);e.textContent=msg;e.style.display='block';setTimeout(()=>e.style.display='none',5000)}
-function scrollTo(id){$(id).scrollIntoView({behavior:'smooth',block:'start'})}
-
-function renderDNA(dna,maxBases=400){
-  const u=dna.toUpperCase().slice(0,maxBases);
-  let html='';
-  for(let i=0;i<u.length;i+=3){
-    const codon=u.slice(i,i+3);
-    let inner='';
-    for(const b of codon){
-      inner+=`<span class="${b}" style="color:${BASE_COLS[b]||'#888'}">${b}</span>`;
+    function binStrToU8(bin) {
+      const len = Math.floor(bin.length / 8);
+      const u8 = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        u8[i] = parseInt(bin.slice(i * 8, i * 8 + 8), 2);
+      }
+      return u8;
     }
-    html+=`<span class="codon">${inner}</span>`;
-  }
-  if(dna.length>maxBases)html+=`<span style="color:var(--muted)"> …+${dna.length-maxBases}</span>`;
-  return html;
-}
-function renderBin(bin){
-  return(bin.match(/.{1,8}/g)||[]).map(b=>`<span class="byte">${b}</span>`).join(' ');
-}
 
-/* ── NAV ─────────────────────────────────────────────────────────────────── */
-let curSec='home';
-function go(id){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  $('sec-'+id).classList.add('active');
-  const btn=$('nb-'+id);
-  if(btn)btn.classList.add('active');
-  curSec=id;
-  if(id==='visual')setTimeout(drawStrand,50);
-  window.scrollTo(0,0);
-}
-
-/* ── LAST STATE ──────────────────────────────────────────────────────────── */
-let lastDNA='';
-
-/* ── ENCODER ─────────────────────────────────────────────────────────────── */
-function doEncode(){
-  const text=$('enc-in').value.trim();
-  if(!text){err('enc-err','Please enter some text to encode.');return}
-  if(text.length>3000){err('enc-err','Input too long (max 3000 chars).');return}
-  const bin=t2b(text);
-  const dna=b2d(bin);
-  lastDNA=dna;
-  $('enc-out-text').textContent=text;
-  $('enc-char-badge').textContent=text.length+' chars';
-  $('enc-out-bin').innerHTML=renderBin(bin);
-  $('enc-out-dna').innerHTML=renderDNA(dna);
-  $('enc-dna-badge').textContent=dna.length+' bases';
-  $('s-gc').textContent=gcPct(dna)+'%';
-  $('s-len').textContent=dna.length;
-  $('s-chars').textContent=text.length;
-  show('enc-out');
-  setTimeout(()=>scrollTo('enc-out'),100);
-}
-
-function doDecode(){
-  const raw=$('dec-in').value.trim().toUpperCase();
-  if(!raw){err('dec-err','Enter a DNA sequence to decode.');return}
-  if(!validDNA(raw)){err('dec-err','Invalid DNA: only A, T, G, C allowed.');return}
-  const bin=d2b(raw);
-  const text=b2t(bin);
-  $('dec-out-bin').innerHTML=renderBin(bin);
-  $('dec-out-text').textContent=text||'(empty or non-printable characters)';
-  show('dec-out');
-  setTimeout(()=>scrollTo('dec-out'),100);
-}
-
-function loadSampleText(){$('enc-in').value='Hello, DNA World! 🧬'}
-function clearEnc(){$('enc-in').value='';hide('enc-out');lastDNA=''}
-function clearDec(){$('dec-in').value='';hide('dec-out')}
-function copyDNA(){
-  if(!lastDNA)return;
-  navigator.clipboard.writeText(lastDNA).then(()=>{
-    const b=$('copy-btn');b.textContent='COPIED ✓';b.style.color='var(--green)';
-    setTimeout(()=>{b.textContent='COPY';b.style.color=''},1600);
-  });
-}
-function exportFASTA(){
-  if(!lastDNA)return;
-  const src=$('enc-in').value.trim().slice(0,40).replace(/"/g,"'");
-  const date=new Date().toISOString().split('T')[0];
-  const seq=lastDNA.match(/.{1,60}/g).join('\n');
-  const fa=`>DNA_ENCODED|date=${date}|len=${lastDNA.length}|src="${src}"\n${seq}`;
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([fa],{type:'text/plain'}));
-  a.download='helixdb_sequence.fasta';a.click();
-}
-function sendToBarcode(){if(!lastDNA)return;go('barcode');$('bc-in').value=lastDNA.slice(0,200)}
-function sendToCompare(n){if(!lastDNA)return;go('compare');$('cmp'+n).value=lastDNA.slice(0,80)}
-function sendToVis(){if(!lastDNA)return;go('visual');setVisSeq(lastDNA.slice(0,60))}
-
-/* ── FILES LOGIC ──────────────────────────────────────────────────────────── */
-let lastFileDNA = '';
-let lastFileName = 'file';
-
-function encodeFile() {
-  const fileInput = $('file-enc-in');
-  if(!fileInput.files.length) { err('file-enc-err', 'Please select a file.'); return; }
-  const file = fileInput.files[0];
-  lastFileName = file.name;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const arr = new Uint8Array(e.target.result);
-    // Use setTimeout so the UI doesn't freeze before we say processing started.
-    // For large files (> a few MBs) this can take a moment.
-    setTimeout(() => {
-      const bin = u8ToBinStr(arr);
-      let dna = '';
-      for(let i=0; i<bin.length; i+=2) {
-        dna += B2D[bin.slice(i, i+2)] || 'A';
+    /* FNV-1a inspired 128-bit deterministic hash */
+    function hashSeq(s) {
+      let h = 2166136261 >>> 0, hex = '';
+      for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0 }
+      hex = h.toString(16).padStart(8, '0');
+      for (let r = 1; r < 4; r++) {
+        let h2 = 2166136261 >>> 0;
+        for (let i = 0; i < s.length; i++) { h2 ^= s.charCodeAt((i * 7 + r * 13) % s.length); h2 = Math.imul(h2, 16777619) >>> 0; h2 = (h2 ^ r * 1234567) >>> 0 }
+        hex += h2.toString(16).padStart(8, '0');
       }
-      lastFileDNA = dna;
-      $('f-s-len').textContent = dna.length + ' bp';
-      $('f-s-size').textContent = (file.size / 1024).toFixed(2) + ' KB';
-      show('file-enc-out');
-    }, 50);
-  };
-  reader.readAsArrayBuffer(file);
-}
+      return hex.toUpperCase();
+    }
 
-function exportFileDNA() {
-  if(!lastFileDNA) return;
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new window.Blob([lastFileDNA], {type:'text/plain'}));
-  a.download = lastFileName + '.encoded.dna.txt';
-  a.click();
-}
+    /* ── UI HELPERS ──────────────────────────────────────────────────────────── */
+    function $(id) { return document.getElementById(id) }
+    function show(id) { $(id).classList.add('show') }
+    function hide(id) { $(id).classList.remove('show') }
+    function err(id, msg) { const e = $(id); e.textContent = msg; e.style.display = 'block'; setTimeout(() => e.style.display = 'none', 5000) }
+    function scrollTo(id) { $(id).scrollIntoView({ behavior: 'smooth', block: 'start' }) }
 
-function decodeFile() {
-  const fileInput = $('file-dec-in');
-  if(!fileInput.files.length) { err('file-dec-err', 'Please select a DNA text file.'); return; }
-  const file = fileInput.files[0];
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    setTimeout(() => {
-      let dna = e.target.result.trim().toUpperCase();
-      if(dna.startsWith('>')) {
-        dna = dna.split('\n').slice(1).join('').replace(/\s/g,'');
+    function renderDNA(dna, maxBases = 400) {
+      const u = dna.toUpperCase().slice(0, maxBases);
+      let html = '';
+      for (let i = 0; i < u.length; i += 3) {
+        const codon = u.slice(i, i + 3);
+        let inner = '';
+        for (const b of codon) {
+          inner += `<span class="${b}" style="color:${BASE_COLS[b] || '#888'}">${b}</span>`;
+        }
+        html += `<span class="codon">${inner}</span>`;
       }
-      let bin = '';
-      for(let i=0; i<dna.length; i++) {
-        bin += D2B[dna[i]] || '00';
-      }
-      const u8 = binStrToU8(bin);
-      let origName = file.name.replace('.encoded.dna.txt', '').replace('.fasta', '');
-      if(origName === file.name) origName += '_decoded';
+      if (dna.length > maxBases) html += `<span style="color:var(--muted)"> …+${dna.length - maxBases}</span>`;
+      return html;
+    }
+    function renderBin(bin) {
+      return (bin.match(/.{1,8}/g) || []).map(b => `<span class="byte">${b}</span>`).join(' ');
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────────────────────── */
+    let curSec = 'home';
+    function go(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      $('sec-' + id).classList.add('active');
+      const btn = $('nb-' + id);
+      if (btn) btn.classList.add('active');
+      curSec = id;
+      if (id === 'visual') setTimeout(drawStrand, 50);
+      window.scrollTo(0, 0);
+    }
+
+    /* ── LAST STATE ──────────────────────────────────────────────────────────── */
+    let lastDNA = '';
+
+    /* ── ENCODER ─────────────────────────────────────────────────────────────── */
+    function doEncode() {
+      const text = $('enc-in').value.trim();
+      if (!text) { err('enc-err', 'Please enter some text to encode.'); return }
+      if (text.length > 3000) { err('enc-err', 'Input too long (max 3000 chars).'); return }
+      const bin = t2b(text);
+      const dna = b2d(bin);
+      lastDNA = dna;
+      $('enc-out-text').textContent = text;
+      $('enc-char-badge').textContent = text.length + ' chars';
+      $('enc-out-bin').innerHTML = renderBin(bin);
+      $('enc-out-dna').innerHTML = renderDNA(dna);
+      $('enc-dna-badge').textContent = dna.length + ' bases';
+      $('s-gc').textContent = gcPct(dna) + '%';
+      $('s-len').textContent = dna.length;
+      $('s-chars').textContent = text.length;
+      show('enc-out');
+      setTimeout(() => scrollTo('enc-out'), 100);
+    }
+
+    function doDecode() {
+      const raw = $('dec-in').value.trim().toUpperCase();
+      if (!raw) { err('dec-err', 'Enter a DNA sequence to decode.'); return }
+      if (!validDNA(raw)) { err('dec-err', 'Invalid DNA: only A, T, G, C allowed.'); return }
+      const bin = d2b(raw);
+      const text = b2t(bin);
+      $('dec-out-bin').innerHTML = renderBin(bin);
+      $('dec-out-text').textContent = text || '(empty or non-printable characters)';
+      show('dec-out');
+      setTimeout(() => scrollTo('dec-out'), 100);
+    }
+
+    function loadSampleText() { $('enc-in').value = 'Hello, DNA World! 🧬' }
+    function clearEnc() { $('enc-in').value = ''; hide('enc-out'); lastDNA = '' }
+    function clearDec() { $('dec-in').value = ''; hide('dec-out') }
+    function copyDNA() {
+      if (!lastDNA) return;
+      navigator.clipboard.writeText(lastDNA).then(() => {
+        const b = $('copy-btn'); b.textContent = 'COPIED ✓'; b.style.color = 'var(--green)';
+        setTimeout(() => { b.textContent = 'COPY'; b.style.color = '' }, 1600);
+      });
+    }
+    function exportFASTA() {
+      if (!lastDNA) return;
+      const src = $('enc-in').value.trim().slice(0, 40).replace(/"/g, "'");
+      const date = new Date().toISOString().split('T')[0];
+      const seq = lastDNA.match(/.{1,60}/g).join('\n');
+      const fa = `>DNA_ENCODED|date=${date}|len=${lastDNA.length}|src="${src}"\n${seq}`;
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(new window.Blob([u8]));
-      a.download = origName;
+      a.href = URL.createObjectURL(new Blob([fa], { type: 'text/plain' }));
+      a.download = 'helixdb_sequence.fasta'; a.click();
+    }
+    function sendToBarcode() { if (!lastDNA) return; go('barcode'); $('bc-in').value = lastDNA.slice(0, 200) }
+    function sendToCompare(n) { if (!lastDNA) return; go('compare'); $('cmp' + n).value = lastDNA.slice(0, 80) }
+    function sendToVis() { if (!lastDNA) return; go('visual'); setVisSeq(lastDNA.slice(0, 60)) }
+
+    /* ── FILES LOGIC ──────────────────────────────────────────────────────────── */
+    let lastFileDNA = '';
+    let lastFileName = 'file';
+
+    function encodeFile() {
+      const fileInput = $('file-enc-in');
+      if (!fileInput.files.length) { err('file-enc-err', 'Please select a file.'); return; }
+      const file = fileInput.files[0];
+      lastFileName = file.name;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const arr = new Uint8Array(e.target.result);
+        // Use setTimeout so the UI doesn't freeze before we say processing started.
+        // For large files (> a few MBs) this can take a moment.
+        setTimeout(() => {
+          const bin = u8ToBinStr(arr);
+          let dna = '';
+          for (let i = 0; i < bin.length; i += 2) {
+            dna += B2D[bin.slice(i, i + 2)] || 'A';
+          }
+          lastFileDNA = dna;
+          $('f-s-len').textContent = dna.length + ' bp';
+          $('f-s-size').textContent = (file.size / 1024).toFixed(2) + ' KB';
+          show('file-enc-out');
+        }, 50);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function exportFileDNA() {
+      if (!lastFileDNA) return;
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new window.Blob([lastFileDNA], { type: 'text/plain' }));
+      a.download = lastFileName + '.encoded.dna.txt';
       a.click();
-    }, 50);
-  };
-  reader.readAsText(file);
-}
-
-/* ── IMAGES LOGIC ─────────────────────────────────────────────────────────── */
-let lastImageDNA = '';
-let lastImageMeta = 'image/png';
-
-function previewImageEnc(input) {
-  if(input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      $('img-enc-preview').src = e.target.result;
-      $('img-enc-preview-box').style.display = 'block';
     }
-    reader.readAsDataURL(input.files[0]);
-  }
-}
 
-function encodeImage() {
-  const fileInput = $('img-enc-in');
-  if(!fileInput.files.length) { err('img-enc-err', 'Please select an image.'); return; }
-  const file = fileInput.files[0];
-  lastImageMeta = file.type || 'image/png';
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    setTimeout(() => {
-      const arr = new Uint8Array(e.target.result);
-      const bin = u8ToBinStr(arr);
-      let dna = '';
-      for(let i=0; i<bin.length; i+=2) {
-        dna += B2D[bin.slice(i, i+2)] || 'A';
-      }
-      lastImageDNA = dna;
-      $('i-s-len').textContent = dna.length + ' bp';
-      show('img-enc-out');
-    }, 50);
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function exportImageDNA() {
-  if(!lastImageDNA) return;
-  const seq = lastImageDNA.match(/.{1,60}/g).join('\n');
-  const fa=`>IMAGE_ENCODED|mime=${lastImageMeta}|len=${lastImageDNA.length}\n${seq}`;
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new window.Blob([fa], {type:'text/plain'}));
-  a.download = 'encoded_image.fasta';
-  a.click();
-}
-
-function decodeImage() {
-  const fileInput = $('img-dec-in');
-  if(!fileInput.files.length) { err('img-dec-err', 'Please select a DNA text file.'); return; }
-  const file = fileInput.files[0];
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    setTimeout(() => {
-      let dna = e.target.result.trim();
-      let mime = 'image/png';
-      if(dna.startsWith('>')) {
-        const header = dna.split('\n')[0];
-        const m = header.match(/mime=([^|]+)/);
-        if(m) mime = m[1];
-        dna = dna.split('\n').slice(1).join('').replace(/\s/g,'').toUpperCase();
-      } else {
-        dna = dna.replace(/\s/g,'').toUpperCase();
-      }
-      let bin = '';
-      for(let i=0; i<dna.length; i++) {
-        bin += D2B[dna[i]] || '00';
-      }
-      const u8 = binStrToU8(bin);
-      const blob = new window.Blob([u8], {type: mime});
-      const url = URL.createObjectURL(blob);
-      $('img-dec-preview').src = url;
-      show('img-dec-out');
-    }, 50);
-  };
-  reader.readAsText(file);
-}
-
-/* ── BARCODE ─────────────────────────────────────────────────────────────── */
-function doBarcode(){
-  const dna=$('bc-in').value.trim().toUpperCase();
-  if(!dna){err('bc-err','Enter a DNA sequence.');return}
-  if(!validDNA(dna)){err('bc-err','Invalid DNA: only A, T, G, C allowed.');return}
-  const hash=hashSeq(dna);
-  const id='DNA-'+hash.slice(0,16);
-  $('bc-id').textContent=id;
-  $('bc-hash').textContent=hash;
-  $('bc-hash-seg').textContent=[hash.slice(0,8),hash.slice(8,16),hash.slice(16,24),hash.slice(24,32)].join(' ');
-  $('bc-len').textContent=dna.length+' bp';
-  $('bc-gc').textContent=gcPct(dna)+'%';
-
-  /* Draw barcode on canvas */
-  const cv=$('bc-canvas');
-  const ctx=cv.getContext('2d');
-  const W=560,H=90;cv.width=W;cv.height=H;
-  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
-  const pattern=hash.split('').map(c=>parseInt(c,16).toString(2).padStart(4,'0')).join('');
-  const bw=W/pattern.length;
-  for(let i=0;i<pattern.length;i++){
-    if(pattern[i]==='1'){
-      const h=20+Math.round((parseInt(hash[i%32],16)/15)*50);
-      const x=i*bw;
-      const y=(H-h)/2;
-      // Color bands every 8 bars
-      const seg=Math.floor(i/8)%4;
-      ctx.fillStyle=['#00b4d8','#7c3aed','#00ff88','#f59e0b'][seg]+'bb';
-      ctx.fillRect(x,y,Math.max(bw-0.5,0.5),h);
+    function decodeFile() {
+      const fileInput = $('file-dec-in');
+      if (!fileInput.files.length) { err('file-dec-err', 'Please select a DNA text file.'); return; }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        setTimeout(() => {
+          let dna = e.target.result.trim().toUpperCase();
+          if (dna.startsWith('>')) {
+            dna = dna.split('\n').slice(1).join('').replace(/\s/g, '');
+          }
+          let bin = '';
+          for (let i = 0; i < dna.length; i++) {
+            bin += D2B[dna[i]] || '00';
+          }
+          const u8 = binStrToU8(bin);
+          let origName = file.name.replace('.encoded.dna.txt', '').replace('.fasta', '');
+          if (origName === file.name) origName += '_decoded';
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new window.Blob([u8]));
+          a.download = origName;
+          a.click();
+        }, 50);
+      };
+      reader.readAsText(file);
     }
-  }
-  // Quiet zones
-  ctx.fillStyle='#000';ctx.fillRect(0,0,4,H);ctx.fillRect(W-4,0,4,H);
 
-  /* Base counts */
-  const cnt={A:0,T:0,G:0,C:0};
-  for(const b of dna)if(cnt[b]!==undefined)cnt[b]++;
-  const total=dna.length;
-  $('bc-comp').innerHTML=['A','T','G','C'].map(b=>{
-    const pct=(cnt[b]/total*100).toFixed(1);
-    return`<div class="comp-bar-row">
+    /* ── IMAGES LOGIC ─────────────────────────────────────────────────────────── */
+    let lastImageDNA = '';
+    let lastImageMeta = 'image/png';
+
+    function previewImageEnc(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          $('img-enc-preview').src = e.target.result;
+          $('img-enc-preview-box').style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function encodeImage() {
+      const fileInput = $('img-enc-in');
+      if (!fileInput.files.length) { err('img-enc-err', 'Please select an image.'); return; }
+      const file = fileInput.files[0];
+      lastImageMeta = file.type || 'image/png';
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        setTimeout(() => {
+          const arr = new Uint8Array(e.target.result);
+          const bin = u8ToBinStr(arr);
+          let dna = '';
+          for (let i = 0; i < bin.length; i += 2) {
+            dna += B2D[bin.slice(i, i + 2)] || 'A';
+          }
+          lastImageDNA = dna;
+          $('i-s-len').textContent = dna.length + ' bp';
+          show('img-enc-out');
+        }, 50);
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function exportImageDNA() {
+      if (!lastImageDNA) return;
+      const seq = lastImageDNA.match(/.{1,60}/g).join('\n');
+      const fa = `>IMAGE_ENCODED|mime=${lastImageMeta}|len=${lastImageDNA.length}\n${seq}`;
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new window.Blob([fa], { type: 'text/plain' }));
+      a.download = 'encoded_image.fasta';
+      a.click();
+    }
+
+    function decodeImage() {
+      const fileInput = $('img-dec-in');
+      if (!fileInput.files.length) { err('img-dec-err', 'Please select a DNA text file.'); return; }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        setTimeout(() => {
+          let dna = e.target.result.trim();
+          let mime = 'image/png';
+          if (dna.startsWith('>')) {
+            const header = dna.split('\n')[0];
+            const m = header.match(/mime=([^|]+)/);
+            if (m) mime = m[1];
+            dna = dna.split('\n').slice(1).join('').replace(/\s/g, '').toUpperCase();
+          } else {
+            dna = dna.replace(/\s/g, '').toUpperCase();
+          }
+          let bin = '';
+          for (let i = 0; i < dna.length; i++) {
+            bin += D2B[dna[i]] || '00';
+          }
+          const u8 = binStrToU8(bin);
+          const blob = new window.Blob([u8], { type: mime });
+          const url = URL.createObjectURL(blob);
+          $('img-dec-preview').src = url;
+          show('img-dec-out');
+        }, 50);
+      };
+      reader.readAsText(file);
+    }
+
+    /* ── BARCODE ─────────────────────────────────────────────────────────────── */
+    function doBarcode() {
+      const dna = $('bc-in').value.trim().toUpperCase();
+      if (!dna) { err('bc-err', 'Enter a DNA sequence.'); return }
+      if (!validDNA(dna)) { err('bc-err', 'Invalid DNA: only A, T, G, C allowed.'); return }
+      const hash = hashSeq(dna);
+      const id = 'DNA-' + hash.slice(0, 16);
+      $('bc-id').textContent = id;
+      $('bc-hash').textContent = hash;
+      $('bc-hash-seg').textContent = [hash.slice(0, 8), hash.slice(8, 16), hash.slice(16, 24), hash.slice(24, 32)].join(' ');
+      $('bc-len').textContent = dna.length + ' bp';
+      $('bc-gc').textContent = gcPct(dna) + '%';
+
+      /* Draw barcode on canvas */
+      const cv = $('bc-canvas');
+      const ctx = cv.getContext('2d');
+      const W = 560, H = 90; cv.width = W; cv.height = H;
+      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+      const pattern = hash.split('').map(c => parseInt(c, 16).toString(2).padStart(4, '0')).join('');
+      const bw = W / pattern.length;
+      for (let i = 0; i < pattern.length; i++) {
+        if (pattern[i] === '1') {
+          const h = 20 + Math.round((parseInt(hash[i % 32], 16) / 15) * 50);
+          const x = i * bw;
+          const y = (H - h) / 2;
+          // Color bands every 8 bars
+          const seg = Math.floor(i / 8) % 4;
+          ctx.fillStyle = ['#00b4d8', '#7c3aed', '#00ff88', '#f59e0b'][seg] + 'bb';
+          ctx.fillRect(x, y, Math.max(bw - 0.5, 0.5), h);
+        }
+      }
+      // Quiet zones
+      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 4, H); ctx.fillRect(W - 4, 0, 4, H);
+
+      /* Base counts */
+      const cnt = { A: 0, T: 0, G: 0, C: 0 };
+      for (const b of dna) if (cnt[b] !== undefined) cnt[b]++;
+      const total = dna.length;
+      $('bc-comp').innerHTML = ['A', 'T', 'G', 'C'].map(b => {
+        const pct = (cnt[b] / total * 100).toFixed(1);
+        return `<div class="comp-bar-row">
       <div style="width:14px;font-family:'Share Tech Mono';font-size:14px;font-weight:700;color:${BASE_COLS[b]}">${b}</div>
       <div class="comp-bar-track">
         <div class="comp-bar-fill" style="width:${pct}%;background:${BASE_COLS[b]};opacity:.75"></div>
@@ -1340,359 +2080,360 @@ function doBarcode(){
       <div style="width:42px;text-align:right;font-family:'Share Tech Mono';font-size:12px;color:${BASE_COLS[b]}">${pct}%</div>
       <div style="width:32px;text-align:right;font-family:'Share Tech Mono';font-size:11px;color:var(--muted2)">${cnt[b]}</div>
     </div>`;
-  }).join('');
+      }).join('');
 
-  show('bc-out');
-  setTimeout(()=>scrollTo('bc-out'),100);
-}
-function loadSampleBarcode(){$('bc-in').value='ATGCTAGCTAGCATGCGCTAGCTAGCATGCATGCTAGCTAGCATGCGCTA'}
+      show('bc-out');
+      setTimeout(() => scrollTo('bc-out'), 100);
+    }
+    function loadSampleBarcode() { $('bc-in').value = 'ATGCTAGCTAGCATGCGCTAGCTAGCATGCATGCTAGCTAGCATGCGCTA' }
 
-/* ── COMPARE ─────────────────────────────────────────────────────────────── */
-function doCompare(){
-  const s1=$('cmp1').value.trim().toUpperCase();
-  const s2=$('cmp2').value.trim().toUpperCase();
-  if(!s1||!s2){$('cmp-err').textContent='Enter both sequences.';$('cmp-err').style.display='block';return}
-  if(!validDNA(s1)||!validDNA(s2)){$('cmp-err').textContent='Invalid DNA: only A, T, G, C.';$('cmp-err').style.display='block';return}
-  $('cmp-err').style.display='none';
-  const len=Math.max(s1.length,s2.length);
-  let matches=0,h1='',h2='';
-  for(let i=0;i<len;i++){
-    const b1=s1[i]||'-',b2=s2[i]||'-';
-    const isMatch=b1===b2&&b1!=='-',isGap=b1==='-'||b2==='-';
-    if(isMatch)matches++;
-    const cls=isGap?'g':isMatch?'m':'x';
-    h1+=`<span class="${cls}" style="${isMatch?'color:'+BASE_COLS[b1]:isGap?'':'color:'+BASE_COLS[b1]||''}">${b1}</span>`;
-    h2+=`<span class="${cls}" style="${isMatch?'color:'+BASE_COLS[b2]:isGap?'':'color:'+BASE_COLS[b2]||''}">${b2}</span>`;
-  }
-  const sim=(matches/len*100).toFixed(1);
-  const el=$('sim-pct');
-  el.textContent=sim+'%';
-  el.style.color=sim>=80?'var(--green)':sim>=50?'var(--cyan)':'var(--pink)';
-  const fill=$('sim-fill');
-  fill.style.width=sim+'%';
-  fill.style.background=sim>=80?'linear-gradient(90deg,var(--teal),var(--green))':sim>=50?'linear-gradient(90deg,var(--blue),var(--cyan))':'linear-gradient(90deg,#9c2cad,var(--pink))';
-  $('sim-m').textContent=matches+' matches';
-  $('sim-mm').textContent=(len-matches)+' mismatches / gaps';
-  $('c-l1').textContent=s1.length+' bp';$('c-l2').textContent=s2.length+' bp';
-  $('c-gc1').textContent=gcPct(s1)+'%';$('c-gc2').textContent=gcPct(s2)+'%';
-  $('align1').innerHTML=h1;$('align2').innerHTML=h2;
-  show('cmp-out');setTimeout(()=>scrollTo('cmp-out'),100);
-}
-const SAMPLE1='ATGCTAGCATGCGCTAGCATGCATGCAAATGC';
-const SAMPLE2='ATGCAAGCATGCGCTAACATGCATGCAAATGC';
-function loadSampleCmp(n){$('cmp'+n).value=n===1?SAMPLE1:SAMPLE2}
-function mutateEl(id){
-  const el=$(id);const seq=el.value.trim().toUpperCase();if(!seq)return;
-  const arr=seq.split('');const n=Math.max(1,Math.floor(seq.length*0.08));
-  for(let i=0;i<n;i++){const p=Math.floor(Math.random()*arr.length);arr[p]=BASES[Math.floor(Math.random()*4)]}
-  el.value=arr.join('');
-}
-function randomizeEl(id){$(id).value=rnd(40)}
-function swapCmp(){const a=$('cmp1').value,b=$('cmp2').value;$('cmp1').value=b;$('cmp2').value=a}
-function clearCmp(){$('cmp1').value='';$('cmp2').value='';hide('cmp-out');$('cmp-err').style.display='none'}
+    /* ── COMPARE ─────────────────────────────────────────────────────────────── */
+    function doCompare() {
+      const s1 = $('cmp1').value.trim().toUpperCase();
+      const s2 = $('cmp2').value.trim().toUpperCase();
+      if (!s1 || !s2) { $('cmp-err').textContent = 'Enter both sequences.'; $('cmp-err').style.display = 'block'; return }
+      if (!validDNA(s1) || !validDNA(s2)) { $('cmp-err').textContent = 'Invalid DNA: only A, T, G, C.'; $('cmp-err').style.display = 'block'; return }
+      $('cmp-err').style.display = 'none';
+      const len = Math.max(s1.length, s2.length);
+      let matches = 0, h1 = '', h2 = '';
+      for (let i = 0; i < len; i++) {
+        const b1 = s1[i] || '-', b2 = s2[i] || '-';
+        const isMatch = b1 === b2 && b1 !== '-', isGap = b1 === '-' || b2 === '-';
+        if (isMatch) matches++;
+        const cls = isGap ? 'g' : isMatch ? 'm' : 'x';
+        h1 += `<span class="${cls}" style="${isMatch ? 'color:' + BASE_COLS[b1] : isGap ? '' : 'color:' + BASE_COLS[b1] || ''}">${b1}</span>`;
+        h2 += `<span class="${cls}" style="${isMatch ? 'color:' + BASE_COLS[b2] : isGap ? '' : 'color:' + BASE_COLS[b2] || ''}">${b2}</span>`;
+      }
+      const sim = (matches / len * 100).toFixed(1);
+      const el = $('sim-pct');
+      el.textContent = sim + '%';
+      el.style.color = sim >= 80 ? 'var(--green)' : sim >= 50 ? 'var(--cyan)' : 'var(--pink)';
+      const fill = $('sim-fill');
+      fill.style.width = sim + '%';
+      fill.style.background = sim >= 80 ? 'linear-gradient(90deg,var(--teal),var(--green))' : sim >= 50 ? 'linear-gradient(90deg,var(--blue),var(--cyan))' : 'linear-gradient(90deg,#9c2cad,var(--pink))';
+      $('sim-m').textContent = matches + ' matches';
+      $('sim-mm').textContent = (len - matches) + ' mismatches / gaps';
+      $('c-l1').textContent = s1.length + ' bp'; $('c-l2').textContent = s2.length + ' bp';
+      $('c-gc1').textContent = gcPct(s1) + '%'; $('c-gc2').textContent = gcPct(s2) + '%';
+      $('align1').innerHTML = h1; $('align2').innerHTML = h2;
+      show('cmp-out'); setTimeout(() => scrollTo('cmp-out'), 100);
+    }
+    const SAMPLE1 = 'ATGCTAGCATGCGCTAGCATGCATGCAAATGC';
+    const SAMPLE2 = 'ATGCAAGCATGCGCTAACATGCATGCAAATGC';
+    function loadSampleCmp(n) { $('cmp' + n).value = n === 1 ? SAMPLE1 : SAMPLE2 }
+    function mutateEl(id) {
+      const el = $(id); const seq = el.value.trim().toUpperCase(); if (!seq) return;
+      const arr = seq.split(''); const n = Math.max(1, Math.floor(seq.length * 0.08));
+      for (let i = 0; i < n; i++) { const p = Math.floor(Math.random() * arr.length); arr[p] = BASES[Math.floor(Math.random() * 4)] }
+      el.value = arr.join('');
+    }
+    function randomizeEl(id) { $(id).value = rnd(40) }
+    function swapCmp() { const a = $('cmp1').value, b = $('cmp2').value; $('cmp1').value = b; $('cmp2').value = a }
+    function clearCmp() { $('cmp1').value = ''; $('cmp2').value = ''; hide('cmp-out'); $('cmp-err').style.display = 'none' }
 
-/* ── VISUALIZATION ───────────────────────────────────────────────────────── */
-let visSeq=rnd(52);
-let visMutations=0;
-let helixRunning=true;
-let helixSpd=1;
-let strandHover=-1;
+    /* ── VISUALIZATION ───────────────────────────────────────────────────────── */
+    let visSeq = rnd(52);
+    let visMutations = 0;
+    let helixRunning = true;
+    let helixSpd = 1;
+    let strandHover = -1;
 
-function setVisSeq(s){visSeq=s;visMutations=0;updateVisUI();drawStrand()}
-function updateVisUI(){
-  $('vis-seq').innerHTML=renderDNA(visSeq);
-  $('v-len').textContent=visSeq.length+' bp';
-  $('v-gc').textContent=gcPct(visSeq)+'%';
-  $('v-mut').textContent=visMutations;
-}
-function randomStrand(){visSeq=rnd(52);visMutations=0;updateVisUI();drawStrand()}
-function mutateStrand(){
-  const arr=visSeq.split('');
-  const pos=Math.floor(Math.random()*arr.length);
-  const cur=arr[pos];
-  const others=BASES.split('').filter(b=>b!==cur);
-  arr[pos]=others[Math.floor(Math.random()*3)];
-  visSeq=arr.join('');visMutations++;updateVisUI();drawStrand();
-}
-function sendVisToBc(){go('barcode');$('bc-in').value=visSeq}
-function sendVisToCmp(){go('compare');$('cmp1').value=visSeq}
-function toggleAnim(){
-  helixRunning=!helixRunning;
-  $('anim-toggle').textContent=helixRunning?'⏸ Pause':'▶ Resume';
-  if(helixRunning)drawHomeHelix();
-}
-function setSpd(v){helixSpd=parseFloat(v);$('spd-val').textContent=parseFloat(v).toFixed(1)+'x'}
+    function setVisSeq(s) { visSeq = s; visMutations = 0; updateVisUI(); drawStrand() }
+    function updateVisUI() {
+      $('vis-seq').innerHTML = renderDNA(visSeq);
+      $('v-len').textContent = visSeq.length + ' bp';
+      $('v-gc').textContent = gcPct(visSeq) + '%';
+      $('v-mut').textContent = visMutations;
+    }
+    function randomStrand() { visSeq = rnd(52); visMutations = 0; updateVisUI(); drawStrand() }
+    function mutateStrand() {
+      const arr = visSeq.split('');
+      const pos = Math.floor(Math.random() * arr.length);
+      const cur = arr[pos];
+      const others = BASES.split('').filter(b => b !== cur);
+      arr[pos] = others[Math.floor(Math.random() * 3)];
+      visSeq = arr.join(''); visMutations++; updateVisUI(); drawStrand();
+    }
+    function sendVisToBc() { go('barcode'); $('bc-in').value = visSeq }
+    function sendVisToCmp() { go('compare'); $('cmp1').value = visSeq }
+    function toggleAnim() {
+      helixRunning = !helixRunning;
+      $('anim-toggle').textContent = helixRunning ? '⏸ Pause' : '▶ Resume';
+      if (helixRunning) drawHomeHelix();
+    }
+    function setSpd(v) { helixSpd = parseFloat(v); $('spd-val').textContent = parseFloat(v).toFixed(1) + 'x' }
 
-/* Strand canvas */
-const strandCv=$('strand-cv');
-const strandCtx=strandCv.getContext('2d');
-function resizeStrand(){
-  const w=strandCv.parentElement.clientWidth||700;
-  strandCv.width=w*devicePixelRatio;
-  strandCv.height=200*devicePixelRatio;
-  strandCv.style.height='200px';
-  strandCtx.scale(devicePixelRatio,devicePixelRatio);
-}
-resizeStrand();
+    /* Strand canvas */
+    const strandCv = $('strand-cv');
+    const strandCtx = strandCv.getContext('2d');
+    function resizeStrand() {
+      const w = strandCv.parentElement.clientWidth || 700;
+      strandCv.width = w * devicePixelRatio;
+      strandCv.height = 200 * devicePixelRatio;
+      strandCv.style.height = '200px';
+      strandCtx.scale(devicePixelRatio, devicePixelRatio);
+    }
+    resizeStrand();
 
-function drawStrand(){
-  const W=strandCv.width/devicePixelRatio;
-  const H=200;
-  strandCtx.clearRect(0,0,strandCv.width,strandCv.height);
-  if(!visSeq)return;
-  const n=Math.min(visSeq.length,Math.floor(W/14));
-  const seq=visSeq.slice(0,n);
-  const bw=W/n;
-  const midY=H/2,gap=64;
+    function drawStrand() {
+      const W = strandCv.width / devicePixelRatio;
+      const H = 200;
+      strandCtx.clearRect(0, 0, strandCv.width, strandCv.height);
+      if (!visSeq) return;
+      const n = Math.min(visSeq.length, Math.floor(W / 14));
+      const seq = visSeq.slice(0, n);
+      const bw = W / n;
+      const midY = H / 2, gap = 64;
 
-  // Backbone spines
-  strandCtx.beginPath();
-  for(let i=0;i<n;i++){const x=i*bw+bw/2;if(i===0)strandCtx.moveTo(x,midY-gap/2);else strandCtx.lineTo(x,midY-gap/2)}
-  strandCtx.strokeStyle='rgba(0,180,216,0.35)';strandCtx.lineWidth=2;strandCtx.stroke();
+      // Backbone spines
+      strandCtx.beginPath();
+      for (let i = 0; i < n; i++) { const x = i * bw + bw / 2; if (i === 0) strandCtx.moveTo(x, midY - gap / 2); else strandCtx.lineTo(x, midY - gap / 2) }
+      strandCtx.strokeStyle = 'rgba(0,180,216,0.35)'; strandCtx.lineWidth = 2; strandCtx.stroke();
 
-  strandCtx.beginPath();
-  for(let i=0;i<n;i++){const x=i*bw+bw/2;if(i===0)strandCtx.moveTo(x,midY+gap/2);else strandCtx.lineTo(x,midY+gap/2)}
-  strandCtx.strokeStyle='rgba(124,58,237,0.35)';strandCtx.lineWidth=2;strandCtx.stroke();
+      strandCtx.beginPath();
+      for (let i = 0; i < n; i++) { const x = i * bw + bw / 2; if (i === 0) strandCtx.moveTo(x, midY + gap / 2); else strandCtx.lineTo(x, midY + gap / 2) }
+      strandCtx.strokeStyle = 'rgba(124,58,237,0.35)'; strandCtx.lineWidth = 2; strandCtx.stroke();
 
-  for(let i=0;i<n;i++){
-    const b=seq[i],cb=COMP[b];
-    const x=i*bw+bw/2;
-    const isH=i===strandHover;
-    const r=isH?9:5.5;
+      for (let i = 0; i < n; i++) {
+        const b = seq[i], cb = COMP[b];
+        const x = i * bw + bw / 2;
+        const isH = i === strandHover;
+        const r = isH ? 9 : 5.5;
 
-    // Rung
-    strandCtx.strokeStyle=isH?'rgba(0,229,255,0.4)':'rgba(0,229,255,0.1)';
-    strandCtx.lineWidth=isH?1.5:0.5;
-    strandCtx.beginPath();strandCtx.moveTo(x,midY-gap/2);strandCtx.lineTo(x,midY+gap/2);strandCtx.stroke();
+        // Rung
+        strandCtx.strokeStyle = isH ? 'rgba(0,229,255,0.4)' : 'rgba(0,229,255,0.1)';
+        strandCtx.lineWidth = isH ? 1.5 : 0.5;
+        strandCtx.beginPath(); strandCtx.moveTo(x, midY - gap / 2); strandCtx.lineTo(x, midY + gap / 2); strandCtx.stroke();
 
-    // Top base
-    const c1=BASE_COLS[b];
-    if(isH){strandCtx.shadowColor=c1;strandCtx.shadowBlur=16}
-    strandCtx.beginPath();strandCtx.arc(x,midY-gap/2,r,0,Math.PI*2);
-    strandCtx.fillStyle=isH?c1:c1+'aa';strandCtx.fill();
-    strandCtx.shadowBlur=0;
+        // Top base
+        const c1 = BASE_COLS[b];
+        if (isH) { strandCtx.shadowColor = c1; strandCtx.shadowBlur = 16 }
+        strandCtx.beginPath(); strandCtx.arc(x, midY - gap / 2, r, 0, Math.PI * 2);
+        strandCtx.fillStyle = isH ? c1 : c1 + 'aa'; strandCtx.fill();
+        strandCtx.shadowBlur = 0;
 
-    // Bottom base
-    const c2=BASE_COLS[cb];
-    if(isH){strandCtx.shadowColor=c2;strandCtx.shadowBlur=16}
-    strandCtx.beginPath();strandCtx.arc(x,midY+gap/2,r,0,Math.PI*2);
-    strandCtx.fillStyle=isH?c2:c2+'aa';strandCtx.fill();
-    strandCtx.shadowBlur=0;
+        // Bottom base
+        const c2 = BASE_COLS[cb];
+        if (isH) { strandCtx.shadowColor = c2; strandCtx.shadowBlur = 16 }
+        strandCtx.beginPath(); strandCtx.arc(x, midY + gap / 2, r, 0, Math.PI * 2);
+        strandCtx.fillStyle = isH ? c2 : c2 + 'aa'; strandCtx.fill();
+        strandCtx.shadowBlur = 0;
 
-    // Labels
-    strandCtx.fillStyle='rgba(0,0,0,0.85)';
-    strandCtx.font=`bold ${isH?10:7}px 'Share Tech Mono'`;
-    strandCtx.textAlign='center';strandCtx.textBaseline='middle';
-    strandCtx.fillText(b,x,midY-gap/2);
-    strandCtx.fillText(cb,x,midY+gap/2);
-  }
-}
+        // Labels
+        strandCtx.fillStyle = 'rgba(0,0,0,0.85)';
+        strandCtx.font = `bold ${isH ? 10 : 7}px 'Share Tech Mono'`;
+        strandCtx.textAlign = 'center'; strandCtx.textBaseline = 'middle';
+        strandCtx.fillText(b, x, midY - gap / 2);
+        strandCtx.fillText(cb, x, midY + gap / 2);
+      }
+    }
 
-strandCv.addEventListener('mousemove',function(e){
-  const rect=strandCv.getBoundingClientRect();
-  const mx=e.clientX-rect.left;
-  const n=Math.min(visSeq.length,Math.floor(strandCv.width/devicePixelRatio/14));
-  const bw=(strandCv.width/devicePixelRatio)/n;
-  const idx=Math.floor(mx/bw);
-  if(idx>=0&&idx<n&&idx!==strandHover){
-    strandHover=idx;
-    const b=visSeq[idx];const cb=COMP[b];
-    const info=$('base-info');
-    info.className='base-info lit';
-    info.innerHTML=`Position <strong style="color:var(--cyan)">${idx+1}</strong> · 
+    strandCv.addEventListener('mousemove', function (e) {
+      const rect = strandCv.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const n = Math.min(visSeq.length, Math.floor(strandCv.width / devicePixelRatio / 14));
+      const bw = (strandCv.width / devicePixelRatio) / n;
+      const idx = Math.floor(mx / bw);
+      if (idx >= 0 && idx < n && idx !== strandHover) {
+        strandHover = idx;
+        const b = visSeq[idx]; const cb = COMP[b];
+        const info = $('base-info');
+        info.className = 'base-info lit';
+        info.innerHTML = `Position <strong style="color:var(--cyan)">${idx + 1}</strong> · 
       Base: <strong style="color:${BASE_COLS[b]};font-family:'Share Tech Mono'">${b}</strong> (${BASE_NAME[b]}) · 
       Complement: <strong style="color:${BASE_COLS[cb]};font-family:'Share Tech Mono'">${cb}</strong> (${BASE_NAME[cb]}) · 
       ${BONDS[b]}`;
-    drawStrand();
-  }
-});
-strandCv.addEventListener('mouseleave',function(){
-  strandHover=-1;
-  const info=$('base-info');
-  info.className='base-info';info.textContent='Hover over a base to see pairing information';
-  drawStrand();
-});
-
-// Resize handler
-window.addEventListener('resize',()=>{resizeStrand();drawStrand();});
-
-/* ── HOME HELIX ANIMATION (THREE.JS 3D MODEL) ────────────────────────────── */
-let scene, camera, renderer, dnaGroup, particles;
-let helixT = 0;
-
-function initHomeHelix(){
-  const container = $('home-helix').parentElement;
-  
-  // Create Scene
-  scene = new THREE.Scene();
-
-  // Create Camera
-  const wrapper = $('helix-wrapper') || { clientWidth: window.innerWidth, clientHeight: 460 };
-  const W = window.innerWidth;
-  const H = wrapper.clientHeight;
-  camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
-  camera.position.z = 45;
-
-  // Create Renderer attached to existing canvas
-  renderer = new THREE.WebGLRenderer({ canvas: $('home-helix'), alpha: true, antialias: true });
-  renderer.setSize(W, H);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  
-  // Lighting
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-  scene.add(ambientLight);
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-  dirLight.position.set(10, 20, 30);
-  scene.add(dirLight);
-
-  dnaGroup = new THREE.Group();
-  scene.add(dnaGroup);
-
-  // Build the 3D DNA Double Helix
-  const numBasePairs = 40;
-  const radius = 3;
-  const heightStrand = 40;
-  
-  // Materials
-  const backboneMaterial = new THREE.MeshPhongMaterial({ 
-    color: 0x111111, 
-    specular: 0x555555, 
-    shininess: 100 
-  });
-  
-  const colors = [0x00e5ff, 0x7c3aed, 0xec4899, 0x00ff88];
-  
-  class HelixCurve extends THREE.Curve {
-    constructor(radius, height, numTurns, phase) {
-      super();
-      this.radius = radius;
-      this.height = height;
-      this.numTurns = numTurns;
-      this.phase = phase;
-    }
-    getPoint(t, optionalTarget = new THREE.Vector3()) {
-      const angle = t * Math.PI * 2 * this.numTurns + this.phase;
-      const x = Math.cos(angle) * this.radius;
-      const z = Math.sin(angle) * this.radius;
-      const y = (t - 0.5) * this.height;
-      return optionalTarget.set(x, y, z);
-    }
-  }
-
-  const curve1 = new HelixCurve(radius, heightStrand, 3, 0);
-  const curve2 = new HelixCurve(radius, heightStrand, 3, Math.PI);
-  
-  const tubeGeom1 = new THREE.TubeGeometry(curve1, 150, 0.6, 8, false);
-  const tubeGeom2 = new THREE.TubeGeometry(curve2, 150, 0.6, 8, false);
-  
-  const backbone1 = new THREE.Mesh(tubeGeom1, backboneMaterial);
-  const backbone2 = new THREE.Mesh(tubeGeom2, backboneMaterial);
-  dnaGroup.add(backbone1);
-  dnaGroup.add(backbone2);
-
-  // Add Rungs
-  for(let i=0; i<numBasePairs; i++) {
-    const t = i / (numBasePairs - 1);
-    const p1 = curve1.getPoint(t);
-    const p2 = curve2.getPoint(t);
-    
-    // Center point
-    const center = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
-    
-    // Glow materials
-    const colIdx1 = i % 4;
-    const colIdx2 = (colIdx1 + 2) % 4;
-    
-    const halfRungGeom = new THREE.CylinderGeometry(0.25, 0.25, radius + 0.2, 12);
-    halfRungGeom.rotateX(Math.PI / 2);
-    
-    const mat1 = new THREE.MeshPhongMaterial({ 
-      color: colors[colIdx1], emissive: colors[colIdx1], emissiveIntensity: 0.8
+        drawStrand();
+      }
     });
-    const mat2 = new THREE.MeshPhongMaterial({ 
-      color: colors[colIdx2], emissive: colors[colIdx2], emissiveIntensity: 0.8
+    strandCv.addEventListener('mouseleave', function () {
+      strandHover = -1;
+      const info = $('base-info');
+      info.className = 'base-info'; info.textContent = 'Hover over a base to see pairing information';
+      drawStrand();
     });
-    
-    const mesh1 = new THREE.Mesh(halfRungGeom, mat1);
-    mesh1.position.copy(p1).lerp(center, 0.5);
-    mesh1.lookAt(p2);
-    dnaGroup.add(mesh1);
-    
-    const mesh2 = new THREE.Mesh(halfRungGeom, mat2);
-    mesh2.position.copy(p2).lerp(center, 0.5);
-    mesh2.lookAt(p1);
-    dnaGroup.add(mesh2);
-  }
 
-  // Floating particles in background
-  const pGeom = new THREE.BufferGeometry();
-  const pCount = 200;
-  const pPos = new Float32Array(pCount * 3);
-  for(let i=0; i<pCount*3; i++) pPos[i] = (Math.random() - 0.5) * 80;
-  pGeom.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-  const pMat = new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.3, transparent: true, opacity: 0.6 });
-  particles = new THREE.Points(pGeom, pMat);
-  scene.add(particles);
+    // Resize handler
+    window.addEventListener('resize', () => { resizeStrand(); drawStrand(); });
 
-  // Rotate DNA diagonal
-  dnaGroup.rotation.z = -Math.PI / 6;
-  dnaGroup.scale.set(1.5, 1.5, 1.5);
-}
-initHomeHelix();
+    /* ── HOME HELIX ANIMATION (THREE.JS 3D MODEL) ────────────────────────────── */
+    let scene, camera, renderer, dnaGroup, particles;
+    let helixT = 0;
 
-function drawHomeHelix(){
-  // Kept for signature compatibility if called elsewhere manually
-}
+    function initHomeHelix() {
+      const container = $('home-helix').parentElement;
 
-let animMouseX = 0;
-let animMouseY = 0;
-window.addEventListener('mousemove', (e) => {
-  animMouseX = (e.clientX / window.innerWidth) * 2 - 1;
-  animMouseY = (e.clientY / window.innerHeight) * 2 - 1;
-});
+      // Create Scene
+      scene = new THREE.Scene();
 
-let helixRaf;
-function animHelix(){
-  if(helixRunning && scene){
-    helixT += 0.01 * helixSpd;
-    
-    dnaGroup.rotation.x = helixT;
-    
-    // Smooth Parallax
-    dnaGroup.position.x += (animMouseX * 4 - dnaGroup.position.x) * 0.05;
-    dnaGroup.position.y += (-animMouseY * 4 - dnaGroup.position.y) * 0.05;
-    dnaGroup.rotation.y += (animMouseX * 0.2 - dnaGroup.rotation.y) * 0.05;
+      // Create Camera
+      const wrapper = $('helix-wrapper') || { clientWidth: window.innerWidth, clientHeight: 460 };
+      const W = window.innerWidth;
+      const H = wrapper.clientHeight;
+      camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
+      camera.position.z = 45;
 
-    if(particles) {
-      particles.rotation.y += 0.001;
-      particles.position.x += (animMouseX * 2 - particles.position.x) * 0.05;
-      particles.position.y += (-animMouseY * 2 - particles.position.y) * 0.05;
+      // Create Renderer attached to existing canvas
+      renderer = new THREE.WebGLRenderer({ canvas: $('home-helix'), alpha: true, antialias: true });
+      renderer.setSize(W, H);
+      renderer.setPixelRatio(window.devicePixelRatio);
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      scene.add(ambientLight);
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+      dirLight.position.set(10, 20, 30);
+      scene.add(dirLight);
+
+      dnaGroup = new THREE.Group();
+      scene.add(dnaGroup);
+
+      // Build the 3D DNA Double Helix
+      const numBasePairs = 40;
+      const radius = 3;
+      const heightStrand = 40;
+
+      // Materials
+      const backboneMaterial = new THREE.MeshPhongMaterial({
+        color: 0x111111,
+        specular: 0x555555,
+        shininess: 100
+      });
+
+      const colors = [0x00e5ff, 0x7c3aed, 0xec4899, 0x00ff88];
+
+      class HelixCurve extends THREE.Curve {
+        constructor(radius, height, numTurns, phase) {
+          super();
+          this.radius = radius;
+          this.height = height;
+          this.numTurns = numTurns;
+          this.phase = phase;
+        }
+        getPoint(t, optionalTarget = new THREE.Vector3()) {
+          const angle = t * Math.PI * 2 * this.numTurns + this.phase;
+          const x = Math.cos(angle) * this.radius;
+          const z = Math.sin(angle) * this.radius;
+          const y = (t - 0.5) * this.height;
+          return optionalTarget.set(x, y, z);
+        }
+      }
+
+      const curve1 = new HelixCurve(radius, heightStrand, 3, 0);
+      const curve2 = new HelixCurve(radius, heightStrand, 3, Math.PI);
+
+      const tubeGeom1 = new THREE.TubeGeometry(curve1, 150, 0.6, 8, false);
+      const tubeGeom2 = new THREE.TubeGeometry(curve2, 150, 0.6, 8, false);
+
+      const backbone1 = new THREE.Mesh(tubeGeom1, backboneMaterial);
+      const backbone2 = new THREE.Mesh(tubeGeom2, backboneMaterial);
+      dnaGroup.add(backbone1);
+      dnaGroup.add(backbone2);
+
+      // Add Rungs
+      for (let i = 0; i < numBasePairs; i++) {
+        const t = i / (numBasePairs - 1);
+        const p1 = curve1.getPoint(t);
+        const p2 = curve2.getPoint(t);
+
+        // Center point
+        const center = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+
+        // Glow materials
+        const colIdx1 = i % 4;
+        const colIdx2 = (colIdx1 + 2) % 4;
+
+        const halfRungGeom = new THREE.CylinderGeometry(0.25, 0.25, radius + 0.2, 12);
+        halfRungGeom.rotateX(Math.PI / 2);
+
+        const mat1 = new THREE.MeshPhongMaterial({
+          color: colors[colIdx1], emissive: colors[colIdx1], emissiveIntensity: 0.8
+        });
+        const mat2 = new THREE.MeshPhongMaterial({
+          color: colors[colIdx2], emissive: colors[colIdx2], emissiveIntensity: 0.8
+        });
+
+        const mesh1 = new THREE.Mesh(halfRungGeom, mat1);
+        mesh1.position.copy(p1).lerp(center, 0.5);
+        mesh1.lookAt(p2);
+        dnaGroup.add(mesh1);
+
+        const mesh2 = new THREE.Mesh(halfRungGeom, mat2);
+        mesh2.position.copy(p2).lerp(center, 0.5);
+        mesh2.lookAt(p1);
+        dnaGroup.add(mesh2);
+      }
+
+      // Floating particles in background
+      const pGeom = new THREE.BufferGeometry();
+      const pCount = 200;
+      const pPos = new Float32Array(pCount * 3);
+      for (let i = 0; i < pCount * 3; i++) pPos[i] = (Math.random() - 0.5) * 80;
+      pGeom.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+      const pMat = new THREE.PointsMaterial({ color: 0x00e5ff, size: 0.3, transparent: true, opacity: 0.6 });
+      particles = new THREE.Points(pGeom, pMat);
+      scene.add(particles);
+
+      // Rotate DNA diagonal
+      dnaGroup.rotation.z = -Math.PI / 6;
+      dnaGroup.scale.set(1.5, 1.5, 1.5);
+    }
+    initHomeHelix();
+
+    function drawHomeHelix() {
+      // Kept for signature compatibility if called elsewhere manually
     }
 
-    renderer.render(scene, camera);
-  }
-  helixRaf = requestAnimationFrame(animHelix);
-}
-animHelix();
+    let animMouseX = 0;
+    let animMouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+      animMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+      animMouseY = (e.clientY / window.innerHeight) * 2 - 1;
+    });
 
-// Resize observer for 3d canvas
-window.addEventListener('resize', () => {
-    if(camera && renderer) {
+    let helixRaf;
+    function animHelix() {
+      if (helixRunning && scene) {
+        helixT += 0.01 * helixSpd;
+
+        dnaGroup.rotation.x = helixT;
+
+        // Smooth Parallax
+        dnaGroup.position.x += (animMouseX * 4 - dnaGroup.position.x) * 0.05;
+        dnaGroup.position.y += (-animMouseY * 4 - dnaGroup.position.y) * 0.05;
+        dnaGroup.rotation.y += (animMouseX * 0.2 - dnaGroup.rotation.y) * 0.05;
+
+        if (particles) {
+          particles.rotation.y += 0.001;
+          particles.position.x += (animMouseX * 2 - particles.position.x) * 0.05;
+          particles.position.y += (-animMouseY * 2 - particles.position.y) * 0.05;
+        }
+
+        renderer.render(scene, camera);
+      }
+      helixRaf = requestAnimationFrame(animHelix);
+    }
+    animHelix();
+
+    // Resize observer for 3d canvas
+    window.addEventListener('resize', () => {
+      if (camera && renderer) {
         const wrapper = $('helix-wrapper') || { clientHeight: 460 };
         const W = window.innerWidth;
         const H = wrapper.clientHeight;
         camera.aspect = W / H;
         camera.updateProjectionMatrix();
         renderer.setSize(W, H);
-    }
-});
+      }
+    });
 
-/* ── INIT ────────────────────────────────────────────────────────────────── */
-updateVisUI();
-drawStrand();
+    /* ── INIT ────────────────────────────────────────────────────────────────── */
+    updateVisUI();
+    drawStrand();
 
-// Keyboard shortcut: Escape goes home
-document.addEventListener('keydown',e=>{if(e.key==='Escape')go('home')});
-</script>
+    // Keyboard shortcut: Escape goes home
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') go('home') });
+  </script>
 </body>
+
 </html>
