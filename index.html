@@ -468,6 +468,8 @@ canvas{cursor:crosshair;display:block}
     </div>
     <button class="nav-btn active" id="nb-home"    onclick="go('home')">Home</button>
     <button class="nav-btn"        id="nb-storage" onclick="go('storage')">Storage</button>
+    <button class="nav-btn"        id="nb-files"   onclick="go('files')">Files</button>
+    <button class="nav-btn"        id="nb-images"  onclick="go('images')">Images</button>
     <button class="nav-btn"        id="nb-barcode" onclick="go('barcode')">Barcode</button>
     <button class="nav-btn"        id="nb-compare" onclick="go('compare')">Compare</button>
     <button class="nav-btn"        id="nb-visual"  onclick="go('visual')">Visualize</button>
@@ -519,6 +521,18 @@ canvas{cursor:crosshair;display:block}
       <div class="card-title purple"><div class="bar"></div>🌀 DNA Visualization</div>
       <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Interactive strand canvas with hover-to-inspect base pairs, animated double-helix, mutation simulation, and speed control. Each base is color-coded with Watson-Crick pairing information.</p>
       <button class="btn btn-purple btn-sm">Open Visualizer →</button>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top: 22px; margin-bottom: 22px;">
+    <div class="glass-card green-tint" style="cursor:pointer" onclick="go('files')">
+      <div class="card-title green"><div class="bar"></div>📁 File Storage</div>
+      <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Encode entire files into DNA sequences. Converts any file to binary and then to synthetic DNA bases. Download the encoded sequence as a FASTA file or upload DNA to recover your file.</p>
+      <button class="btn btn-green btn-sm">Open File Storage →</button>
+    </div>
+    <div class="glass-card purple-tint" style="cursor:pointer" onclick="go('images')">
+      <div class="card-title purple"><div class="bar"></div>🖼 Image Storage</div>
+      <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:18px">Encode images into DNA sequences. Upload an image, preview it, encode to DNA, and reconstruct the image natively from DNA text in the browser.</p>
+      <button class="btn btn-purple btn-sm">Open Image Storage →</button>
     </div>
   </div>
 
@@ -665,6 +679,120 @@ canvas{cursor:crosshair;display:block}
             <div id="dec-out-text" style="font-family:'Share Tech Mono';font-size:14px;color:var(--green);padding:14px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:8px;word-break:break-all;min-height:40px"></div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ FILES -->
+<section id="sec-files" class="section">
+  <div class="sec-header">
+    <div class="sec-title"><span>File</span> DNA Encoding</div>
+    <div class="sec-desc">Encode any file to a DNA sequence and decode a DNA text file back into the original file. All processing is done locally in your browser.</div>
+  </div>
+
+  <div class="grid-2">
+    <!-- ENCODER -->
+    <div class="glass-card">
+      <div class="card-title"><div class="bar"></div>Encode File → DNA</div>
+      <label>Select a file to encode</label>
+      <input type="file" id="file-enc-in" style="width:100%;margin-bottom:15px;color:var(--text)" />
+      <div class="btn-row">
+        <button class="btn btn-cyan" onclick="encodeFile()">Encode File →</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('file-enc-in').value=''">Clear</button>
+      </div>
+      <div id="file-enc-err" class="error-msg"></div>
+    </div>
+
+    <!-- DECODER -->
+    <div class="glass-card purple-tint">
+      <div class="card-title purple"><div class="bar"></div>Decode DNA → File</div>
+      <label>Upload DNA text file (.txt or .fasta)</label>
+      <input type="file" id="file-dec-in" accept=".txt,.fasta" style="width:100%;margin-bottom:15px;color:var(--text)" />
+      <div class="btn-row">
+        <button class="btn btn-purple" onclick="decodeFile()">Decode File →</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('file-dec-in').value=''">Clear</button>
+      </div>
+      <div id="file-dec-err" class="error-msg"></div>
+    </div>
+  </div>
+  
+  <div id="file-enc-out" class="output-section">
+    <div class="glass-card">
+      <div class="card-title"><div class="bar"></div>Encoded DNA Details</div>
+      <div class="grid-3" style="gap:12px;margin-bottom:16px;">
+        <div class="stat-block">
+          <div class="stat-val" style="color:var(--cyan)" id="f-s-len">—</div>
+          <div class="stat-lab">DNA Length</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-val" style="color:var(--green)" id="f-s-size">—</div>
+          <div class="stat-lab">Orig Size</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-sm" onclick="exportFileDNA()">⬇ Download DNA</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ IMAGES -->
+<section id="sec-images" class="section">
+  <div class="sec-header">
+    <div class="sec-title"><span>Image</span> DNA Encoding</div>
+    <div class="sec-desc">Encode images into DNA sequences. Decode DNA back into image visualization.</div>
+  </div>
+
+  <div class="grid-2">
+    <!-- ENCODER -->
+    <div class="glass-card">
+      <div class="card-title"><div class="bar"></div>Encode Image → DNA</div>
+      <label>Select an image to encode</label>
+      <input type="file" id="img-enc-in" accept="image/*" style="width:100%;margin-bottom:15px;color:var(--text)" onchange="previewImageEnc(this)" />
+      <div style="text-align:center;margin-bottom:15px;display:none;background:rgba(0,0,0,0.5);border:1px solid var(--border2);border-radius:8px;padding:10px;" id="img-enc-preview-box">
+        <img id="img-enc-preview" style="max-width:100%;max-height:150px;border-radius:4px" />
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-cyan" onclick="encodeImage()">Encode Image →</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('img-enc-in').value='';document.getElementById('img-enc-preview-box').style.display='none'">Clear</button>
+      </div>
+      <div id="img-enc-err" class="error-msg"></div>
+    </div>
+
+    <!-- DECODER -->
+    <div class="glass-card green-tint">
+      <div class="card-title green"><div class="bar"></div>Decode DNA → Image</div>
+      <label>Upload DNA text file (.txt or .fasta)</label>
+      <input type="file" id="img-dec-in" accept=".txt,.fasta" style="width:100%;margin-bottom:15px;color:var(--text)" />
+      <div class="btn-row">
+        <button class="btn btn-green" onclick="decodeImage()">Decode Image →</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('img-dec-in').value='';hide('img-dec-out')">Clear</button>
+      </div>
+      <div id="img-dec-err" class="error-msg"></div>
+    </div>
+  </div>
+
+  <div id="img-enc-out" class="output-section">
+    <div class="glass-card">
+      <div class="card-title"><div class="bar"></div>Encoded DNA Information</div>
+      <div class="grid-3" style="gap:12px;margin-bottom:16px;">
+        <div class="stat-block">
+          <div class="stat-val" style="color:var(--cyan)" id="i-s-len">—</div>
+          <div class="stat-lab">DNA Length</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost btn-sm" onclick="exportImageDNA()">⬇ Download DNA</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="img-dec-out" class="output-section">
+    <div class="glass-card">
+      <div class="card-title"><div class="bar"></div>Decoded Image</div>
+      <div style="text-align:center;background:rgba(0,0,0,0.5);border:1px solid var(--border2);border-radius:8px;padding:10px;">
+        <img id="img-dec-preview" style="max-width:100%;max-height:300px;border-radius:4px" />
       </div>
     </div>
   </div>
@@ -887,6 +1015,31 @@ function validDNA(s){return/^[ATGCatgc]+$/.test(s)}
 function gcPct(d){const u=d.toUpperCase(),n=(u.match(/[GC]/g)||[]).length;return((n/u.length)*100).toFixed(1)}
 function rnd(len=50){let s='';for(let i=0;i<len;i++)s+=BASES[Math.floor(Math.random()*4)];return s}
 
+const U8_TO_BIN = new Array(256);
+for(let i=0; i<256; i++) U8_TO_BIN[i] = i.toString(2).padStart(8,'0');
+
+function u8ToBinStr(u8){
+  const chunks = [];
+  for(let i=0; i<u8.length; i+=1024) {
+    let s = '';
+    const end = Math.min(i+1024, u8.length);
+    for(let j=i; j<end; j++){
+      s += U8_TO_BIN[u8[j]];
+    }
+    chunks.push(s);
+  }
+  return chunks.join('');
+}
+
+function binStrToU8(bin){
+  const len = Math.floor(bin.length / 8);
+  const u8 = new Uint8Array(len);
+  for(let i=0; i<len; i++){
+    u8[i] = parseInt(bin.slice(i*8, i*8+8), 2);
+  }
+  return u8;
+}
+
 /* FNV-1a inspired 128-bit deterministic hash */
 function hashSeq(s){
   let h=2166136261>>>0,hex='';
@@ -996,6 +1149,148 @@ function exportFASTA(){
 function sendToBarcode(){if(!lastDNA)return;go('barcode');$('bc-in').value=lastDNA.slice(0,200)}
 function sendToCompare(n){if(!lastDNA)return;go('compare');$('cmp'+n).value=lastDNA.slice(0,80)}
 function sendToVis(){if(!lastDNA)return;go('visual');setVisSeq(lastDNA.slice(0,60))}
+
+/* ── FILES LOGIC ──────────────────────────────────────────────────────────── */
+let lastFileDNA = '';
+let lastFileName = 'file';
+
+function encodeFile() {
+  const fileInput = $('file-enc-in');
+  if(!fileInput.files.length) { err('file-enc-err', 'Please select a file.'); return; }
+  const file = fileInput.files[0];
+  lastFileName = file.name;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const arr = new Uint8Array(e.target.result);
+    // Use setTimeout so the UI doesn't freeze before we say processing started.
+    // For large files (> a few MBs) this can take a moment.
+    setTimeout(() => {
+      const bin = u8ToBinStr(arr);
+      let dna = '';
+      for(let i=0; i<bin.length; i+=2) {
+        dna += B2D[bin.slice(i, i+2)] || 'A';
+      }
+      lastFileDNA = dna;
+      $('f-s-len').textContent = dna.length + ' bp';
+      $('f-s-size').textContent = (file.size / 1024).toFixed(2) + ' KB';
+      show('file-enc-out');
+    }, 50);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function exportFileDNA() {
+  if(!lastFileDNA) return;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new window.Blob([lastFileDNA], {type:'text/plain'}));
+  a.download = lastFileName + '.encoded.dna.txt';
+  a.click();
+}
+
+function decodeFile() {
+  const fileInput = $('file-dec-in');
+  if(!fileInput.files.length) { err('file-dec-err', 'Please select a DNA text file.'); return; }
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    setTimeout(() => {
+      let dna = e.target.result.trim().toUpperCase();
+      if(dna.startsWith('>')) {
+        dna = dna.split('\n').slice(1).join('').replace(/\s/g,'');
+      }
+      let bin = '';
+      for(let i=0; i<dna.length; i++) {
+        bin += D2B[dna[i]] || '00';
+      }
+      const u8 = binStrToU8(bin);
+      let origName = file.name.replace('.encoded.dna.txt', '').replace('.fasta', '');
+      if(origName === file.name) origName += '_decoded';
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new window.Blob([u8]));
+      a.download = origName;
+      a.click();
+    }, 50);
+  };
+  reader.readAsText(file);
+}
+
+/* ── IMAGES LOGIC ─────────────────────────────────────────────────────────── */
+let lastImageDNA = '';
+let lastImageMeta = 'image/png';
+
+function previewImageEnc(input) {
+  if(input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      $('img-enc-preview').src = e.target.result;
+      $('img-enc-preview-box').style.display = 'block';
+    }
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function encodeImage() {
+  const fileInput = $('img-enc-in');
+  if(!fileInput.files.length) { err('img-enc-err', 'Please select an image.'); return; }
+  const file = fileInput.files[0];
+  lastImageMeta = file.type || 'image/png';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    setTimeout(() => {
+      const arr = new Uint8Array(e.target.result);
+      const bin = u8ToBinStr(arr);
+      let dna = '';
+      for(let i=0; i<bin.length; i+=2) {
+        dna += B2D[bin.slice(i, i+2)] || 'A';
+      }
+      lastImageDNA = dna;
+      $('i-s-len').textContent = dna.length + ' bp';
+      show('img-enc-out');
+    }, 50);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function exportImageDNA() {
+  if(!lastImageDNA) return;
+  const seq = lastImageDNA.match(/.{1,60}/g).join('\n');
+  const fa=`>IMAGE_ENCODED|mime=${lastImageMeta}|len=${lastImageDNA.length}\n${seq}`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new window.Blob([fa], {type:'text/plain'}));
+  a.download = 'encoded_image.fasta';
+  a.click();
+}
+
+function decodeImage() {
+  const fileInput = $('img-dec-in');
+  if(!fileInput.files.length) { err('img-dec-err', 'Please select a DNA text file.'); return; }
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    setTimeout(() => {
+      let dna = e.target.result.trim();
+      let mime = 'image/png';
+      if(dna.startsWith('>')) {
+        const header = dna.split('\n')[0];
+        const m = header.match(/mime=([^|]+)/);
+        if(m) mime = m[1];
+        dna = dna.split('\n').slice(1).join('').replace(/\s/g,'').toUpperCase();
+      } else {
+        dna = dna.replace(/\s/g,'').toUpperCase();
+      }
+      let bin = '';
+      for(let i=0; i<dna.length; i++) {
+        bin += D2B[dna[i]] || '00';
+      }
+      const u8 = binStrToU8(bin);
+      const blob = new window.Blob([u8], {type: mime});
+      const url = URL.createObjectURL(blob);
+      $('img-dec-preview').src = url;
+      show('img-dec-out');
+    }, 50);
+  };
+  reader.readAsText(file);
+}
 
 /* ── BARCODE ─────────────────────────────────────────────────────────────── */
 function doBarcode(){
