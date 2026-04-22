@@ -1056,6 +1056,68 @@
       display: block
     }
 
+    /* ── TEAM CARDS ───────────────────────────────────────────────────── */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+      margin-top: 30px;
+    }
+
+    .team-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .team-card:hover {
+      border-color: rgba(0, 229, 255, 0.5);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 229, 255, 0.2);
+    }
+
+    .team-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .team-info {
+      padding: 20px;
+    }
+
+    .team-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .team-role {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 1px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid var(--border2);
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .team-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
     /* ── DIVIDER ──────────────────────────────────────────────────────── */
     .divider {
       height: 1px;
@@ -1207,6 +1269,90 @@
           Each ASCII character (8 bits) maps to exactly 4 nucleotides. A 10-character string produces a 40-base DNA
           strand.
           Complementary base pairs: A↔T (2 H-bonds) and G↔C (3 H-bonds) — the same Watson-Crick rules used in real DNA.
+        </div>
+      </div>
+
+      <!-- Canva Presentation Embed -->
+      <div class="glass-card">
+        <div class="card-title">
+          <div class="bar"></div>DNA Based Storage System Presentation
+        </div>
+        <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden; border-radius: 8px; will-change: transform;">
+          <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;" src="https://www.canva.com/design/DAG1gVZg8WM/W4XP1-F5qPq1uBb8LpOSJw/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen"></iframe>
+        </div>
+        <a href="https://www.canva.com/design/DAG1gVZg8WM/W4XP1-F5qPq1uBb8LpOSJw/view?utm_content=DAG1gVZg8WM&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener" style="color: var(--cyan); text-decoration: none; font-size: 14px;"><strong>DNA BASED STORAGE SYSTEM</strong></a>
+      </div>
+
+      <!-- TEAM SECTION -->
+      <div class="sec-header" style="margin-top: 60px;">
+        <div class="sec-title"><span>TEAM</span> & CREDITS</div>
+        <div class="sec-desc">The minds and researchers behind the DNA Based Storage System.</div>
+      </div>
+
+      <div class="team-grid">
+        <!-- Developer 1 -->
+        <div class="team-card">
+          <img src="RUDRA.jpeg" alt="Team Member Profile" class="team-img" style="object-position: top;">
+          <div class="team-info">
+            <div class="team-name" style="display: flex; justify-content: space-between; align-items: center;">
+              Rudra Goray I024 Sap ID - 70122500055
+              <span style="font-size: 10px; color: var(--muted2); font-family: 'Share Tech Mono'">1024</span>
+            </div>
+            <div class="team-role">DNA BARCODING</div>
+            <div class="team-desc">Did his part on the Case studies and and advantages of the DNA Barcoding.</div>
+          </div>
+        </div>
+
+        <!-- Developer 2 -->
+        <div class="team-card">
+          <img src="SAHIL.jpeg" alt="Megh Chheda placeholder" class="team-img">
+          <div class="team-info">
+            <div class="team-name" style="display: flex; justify-content: space-between; align-items: center;">
+             Sahil Chaudhari I013 Sap id - 70122500021
+              <span style="font-size: 10px; color: var(--muted2); font-family: 'Share Tech Mono'">1013</span>
+            </div>
+            <div class="team-role" style="color: var(--amber); border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.1);">MODEL + DNA BASED STORAGE</div>
+            <div class="team-desc">Built the Model simulation of DNA encoder and decoder and researched on DNA based data storage.</div>
+          </div>
+        </div>
+
+        <!-- Developer 3 -->
+        <div class="team-card">
+          <img src="RAGHAV.jpeg" alt="Anit Fadia placeholder" class="team-img">
+          <div class="team-info">
+            <div class="team-name" style="display: flex; justify-content: space-between; align-items: center;">
+              Raghav Chandak I012 Sap id - 70122500064
+              <span style="font-size: 10px; color: var(--muted2); font-family: 'Share Tech Mono'">1012</span>
+            </div>
+            <div class="team-role" style="color: var(--green); border-color: rgba(0, 255, 136, 0.4); background: rgba(0, 255, 136, 0.1);">MODEL PLUS DNA BASED STORAGE</div>
+            <div class="team-desc">Built the Model of DNA encoder and decoder and did his part on DNA based data Storage.</div>
+          </div>
+        </div>
+
+        <!-- Developer 4 -->
+        <div class="team-card">
+          <img src="KRISH.jpeg" alt="Priya Gandhi placeholder" class="team-img">
+          <div class="team-info">
+            <div class="team-name" style="display: flex; justify-content: space-between; align-items: center;">
+              krish Karanpuria I035 Sap ID- 70122500049
+              <span style="font-size: 10px; color: var(--muted2); font-family: 'Share Tech Mono'">1035</span>
+            </div>
+            <div class="team-role" style="color: var(--teal); border-color: rgba(0, 180, 216, 0.4); background: rgba(0, 180, 216, 0.1);">DNA BARCODING</div>
+            <div class="team-desc">Researched about the applications and limitations of the DNA barcoding method</div>
+          </div>
+        </div>
+
+        <!-- Developer 5 -->
+        <div class="team-card">
+          <img src="SHANTANU.jpeg" alt="Member 5 placeholder" class="team-img">
+          <div class="team-info">
+            <div class="team-name" style="display: flex; justify-content: space-between; align-items: center;">
+              Shantanu Dalvi
+              <span style="font-size: 10px; color: var(--muted2); font-family: 'Share Tech Mono'">1016</span>
+            </div>
+            <div class="team-role" style="color: var(--pink); border-color: rgba(236, 72, 153, 0.4); background: rgba(236, 72, 153, 0.1);">Research</div>
+            <div class="team-desc"></div>
+          </div>
         </div>
       </div>
     </section>
